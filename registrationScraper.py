@@ -6,40 +6,16 @@ from HTMLParser import HTMLParser
 from htmlentitydefs import name2codepoint
 from bs4 import BeautifulSoup
 import re
+import sqlite3
 #Parser class
-class MyHTMLParser(HTMLParser):
-    def handle_starttag(self, tag, attrs):
-        print "Start tag:", tag
-        for attr in attrs:
-            print "     attr:", attr
-
-    def handle_endtag(self, tag):
-        print "End tag  :", tag
-
-    def handle_data(self, data):
-        print "Data     :", data
-
-    def handle_comment(self, data):
-        print "Comment  :", data
-
-    #def handle_entityref(self, name):
-        #c = unichr(name2codepoint[name])
-        #print "Named ent:", c
-
-    def handle_charref(self, name):
-        if name.startswith('x'):
-            c = unichr(int(name[1:], 16))
-        else:
-            c = unichr(int(name))
-        print "Num ent  :", c
-
-    def handle_decl(self, data):
-        print "Decl     :", data
-
 
 def Scraper():
     #spring of 2019
     x = 0
+
+    conn = sqlite3.connect('classes.db')
+    c = conn.cursor()
+
     subjects = ["ACCT","ACSC","ACST","AERO","AMBA","ARAB","ARHS","ARTH","BCHM","BCOM","BETH","BIOL","BLAW","BUSN","CATH","CHDC","CHEM","CHIN","CIED","CISC","CJUS","CLAS","COAC","COJO","COMM","CPSY","CSIS","CSMA","CTED","DRSW","DSCI","DVDM","DVDT","DVHS","DVLS","DVMT","DVPH","DVPM","DVPT","DVSP","DVSS","DVST","ECMP","ECON","EDCE","EDLD","EDUA","EDUC","EGED","ENGL","ENGR","ENTR","ENVR","ESCI","ETLS","EXSC","FAST","FILM","FINC","FREN","GBEC","GENG","GEOG","GEOL","GERM","GIFT","GMUS","GRED","GREK","GRPE","GRSW","GSPA","HIST","HLTH","HONR","HRDO","IBUS","IDSC","IDSW","IDTH","INAC","INCH","INEC","INEG","INFC","INFR","INGR","INHR","INID","INIM","INJP","INLW","INMC","INMG","INMK","INOP","INPS","INRS","INSP","INST","INTR","IRGA","ITAL","JAPN","JOUR","JPST","LATN","LAWS","LEAD","LGST","LHDT","MATH","MBAC","MBEC","MBEN","MBEX","MBFC","MBFR","MBFS","MBGC","MBGM","MBHC","MBHR","MBIF","MBIM","MBIS","MBLW","MBMG","MBMK","MBNP","MBOP","MBQM","MBSK","MBSP","MBST","MBUN","MBVE","MFGS","MGMP","MGMT","MKTG","MMUS","MSQS","MSRA","MUSC","MUSN","MUSP","MUSR","MUSW","NSCI","ODOC","OPMT","PHED","PHIL","PHYS","PLLD","POLS","PSYC","PUBH","QMCS","READ","REAL","RECE","REDP","RUSS","SABC","SABD","SACS","SAED","SAIM","SAIN","SALS","SAMB","SASE","SASW","SEAM","SEIS","SMEE","SOCI","SOWK","SPAN","SPED","SPGT","SPUG","STAT","STEM","TEGR","THEO","THTR","WMST"]
     for subject in subjects:
         response = urllib2.urlopen("https://classes.aws.stthomas.edu/index.htm?year=2019&term=20&schoolCode=ALL&levelCode=ALL&selectedSubjects="+subject)
@@ -80,11 +56,18 @@ def Scraper():
                 courseFied = item.find_all('p', class_='courseInfoHighlight')#.get_text()
                 courseNumb = " ".join(courseFied[0].get_text().split())#This removes excess spaces
                 courseCred = " ".join(courseFied[4].get_text().split())#This removes excess spaces
+                courseSect = 0
+                courseRoom = 0
 
                 ##IMPORT INTO DATABASE HERE##
+                c.execute("INSERT INTO sections VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (courseNumb, subject, courseNumber, courseSect, courseLoca, courseRoom, courseInst, courseTime, courseCapa, courseRegi))
 
+                present = None
+                present = c.execute("SELECT * FROM courses WHERE course_number=?", courseNumb)
+                if(present == None):
+                    c.execute("INSERT INTO sections VALUES (?, ?, ?, ?, ?)", (subject, courseNumb, coureCred, courseName, courseInfo))
 
-
+                conn.commit()
                 ##END DATABASE##
 
                 #Simple prints for error checking
@@ -114,7 +97,8 @@ def Scraper():
             except:
                 #Remove this error file when complete
                 err.write("%s\n" % item)
-                print "Error with course "+courseName
+                print("Error with course "+courseName)
             #break
         #f.write(courses)
+    conn.close()
 Scraper()
