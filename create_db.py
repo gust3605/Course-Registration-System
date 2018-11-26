@@ -1,12 +1,12 @@
 import sqlite3
 
 conn = sqlite3.connect('classes.db')
-
 c = conn.cursor()
 
 c.execute('''CREATE TABLE departments (
     subject text,
     full_name text
+    PRIMARY KEY (subject)
     )''')
 
 c.execute('''CREATE TABLE courses (
@@ -27,7 +27,8 @@ c.execute('''CREATE TABLE sections (
     professors text,
     times text,
     capacity integer,
-    registered text
+    registered text,
+    PRIMARY KEY (crn)
     )''')
 
 c.execute('''CREATE TABLE people (
@@ -35,7 +36,8 @@ c.execute('''CREATE TABLE people (
     position text,
     first_name text,
     last_name text,
-    registered_courses
+    registered_courses,
+    PRIMARY KEY (university_id)
     )''')
 
 conn.commit()
