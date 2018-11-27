@@ -2,7 +2,6 @@
 #sudo apt-get install python-bs4
 #note: This is python 2.7
 import urllib2
-from htmlentitydefs import name2codepoint
 from bs4 import BeautifulSoup
 import re
 import sqlite3
@@ -10,7 +9,7 @@ import sqlite3
 def Scraper():
     #spring of 2019
     
-    #Set up SQL database
+    #Connects to SQL database
     conn = sqlite3.connect('classes.db')
     c = conn.cursor()
     c.execute('''CREATE TABLE departments (
@@ -101,13 +100,13 @@ def Scraper():
 
             ##IMPORT INTO DATABASE HERE##
             c.execute("INSERT INTO sections VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (int(courseNumb[5:]), subject, courseNumber, courseSect, courseLoca, 
-                                                                                    courseRoom, courseInst, courseTime, int(courseCapa[6:]), courseRegi))
+                                                                                    courseRoom, courseInst, courseTime, int(courseCapa[6:]), courseRegi,))
             #Incorrect number of bindings supplied. The current statement uses 1, and there are 10 supplied.
-            c.execute("SELECT * FROM courses WHERE course_number=?", courseNumb)
+            c.execute("SELECT * FROM courses WHERE course_number=?", [courseNumb])
             present = c.fetchone()
 
             if present is None:
-                c.execute("INSERT INTO sections VALUES (?, ?, ?, ?, ?)", (subject, courseNumb, courseCred, courseName, courseInfo))
+                c.execute("INSERT INTO sections VALUES (?, ?, ?, ?, ?)", (subject, courseNumb, courseCred, courseName, courseInfo,))
             conn.commit()
             ##END DATABASE##
 
