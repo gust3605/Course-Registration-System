@@ -5,7 +5,7 @@ c = conn.cursor()
 
 c.execute('''CREATE TABLE departments (
     subject text,
-    full_name text
+    full_name text,
     PRIMARY KEY (subject)
     )''')
 
