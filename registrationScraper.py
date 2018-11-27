@@ -6,13 +6,40 @@ from HTMLParser import HTMLParser
 from htmlentitydefs import name2codepoint
 from bs4 import BeautifulSoup
 import re
-import sqlite3
 #Parser class
+class MyHTMLParser(HTMLParser):
+    def handle_starttag(self, tag, attrs):
+        print "Start tag:", tag
+        for attr in attrs:
+            print "     attr:", attr
+
+    def handle_endtag(self, tag):
+        print "End tag  :", tag
+
+    def handle_data(self, data):
+        print "Data     :", data
+
+    def handle_comment(self, data):
+        print "Comment  :", data
+
+    #def handle_entityref(self, name):
+        #c = unichr(name2codepoint[name])
+        #print "Named ent:", c
+
+    def handle_charref(self, name):
+        if name.startswith('x'):
+            c = unichr(int(name[1:], 16))
+        else:
+            c = unichr(int(name))
+        print "Num ent  :", c
+
+    def handle_decl(self, data):
+        print "Decl     :", data
+
 
 def Scraper():
     #spring of 2019
     x = 0
-
     conn = sqlite3.connect('classes.db')
     c = conn.cursor()
 
@@ -56,18 +83,20 @@ def Scraper():
                 courseFied = item.find_all('p', class_='courseInfoHighlight')#.get_text()
                 courseNumb = " ".join(courseFied[0].get_text().split())#This removes excess spaces
                 courseCred = " ".join(courseFied[4].get_text().split())#This removes excess spaces
-                courseSect = 0
-                courseRoom = 0
 
                 ##IMPORT INTO DATABASE HERE##
                 c.execute("INSERT INTO sections VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (courseNumb, subject, courseNumber, courseSect, courseLoca, courseRoom, courseInst, courseTime, courseCapa, courseRegi))
 
-                present = None
-                present = c.execute("SELECT * FROM courses WHERE course_number=?", courseNumb)
-                if(present == None):
+
+                c.execute("SELECT * FROM courses WHERE course_number=?", courseNumb)
+                present = c.fetchone()
+
+                if present is None:
                     c.execute("INSERT INTO sections VALUES (?, ?, ?, ?, ?)", (subject, courseNumb, coureCred, courseName, courseInfo))
 
                 conn.commit()
+
+
                 ##END DATABASE##
 
                 #Simple prints for error checking
@@ -97,7 +126,7 @@ def Scraper():
             except:
                 #Remove this error file when complete
                 err.write("%s\n" % item)
-                print("Error with course "+courseName)
+                print "Error with course "+courseName
             #break
         #f.write(courses)
     conn.close()
