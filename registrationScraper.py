@@ -48,6 +48,7 @@ def Scraper():
         registered_courses,
         PRIMARY KEY (university_id)
         )''')
+    conn.commit()
     #END database
 
     #Loop get requests on each subject
