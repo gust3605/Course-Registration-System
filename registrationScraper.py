@@ -74,6 +74,7 @@ def Scraper():
                 
         courses = soup.find_all('div', class_="course") #Locate the course sections: ret=list
         for item in courses:
+            #err.write("%s\n" % item)
             #Exceptions could be replaced with 'if' statements
             try:
                 courseNumber = item.find('span', class_='courseOpen').get_text() #This is NOT ID number
@@ -93,8 +94,13 @@ def Scraper():
                 courseTime = " ".join(courseTime.split())#This removes excess spaces
                 courseInst = item.find('div', class_='columns small-3 medium-2 large-2').get_text()
                 courseInst = " ".join(courseInst.split())#This removes excess spaces
-                courseLoca = item.find('span', class_='locationHover').get_text()
-                courseLoca = " ".join(courseLoca.split())#This removes excess spaces
+
+                courseRoom = item.find('span', class_='locationHover').get_text()
+                courseRoom = " ".join(courseRoom.split())#This removes excess spaces
+
+                #courseLoca = item.find('span', class_='locationHover').get_text()
+                #courseLoca = " ".join(courseLoca.split())#This removes excess spaces
+
                 courseCapa = item.find('div', class_='columns small-2').get_text()
                 courseCapa = " ".join(courseCapa.split())#This removes excess spaces
                 courseRegi = item.find_all('div', class_='columns small-3')#.get_text()
@@ -103,17 +109,31 @@ def Scraper():
                 courseInfo = " ".join(courseInfo.split())#This removes excess spaces
                 courseFied = item.find_all('p', class_='courseInfoHighlight')#.get_text()
                 courseNumb = " ".join(courseFied[0].get_text().split())#This removes excess spaces
-                courseCred = " ".join(courseFied[4].get_text().split())#This removes excess spaces
-                courseSect = 0
-                courseRoom = 0
+                courseCred = " ".join(courseFied[5].get_text().split())#This removes excess spaces
+                courseLoca = " ".join(courseFied[2].get_text().split())#This removes excess spaces
+                courseNumber, courseSect = courseNumber.split('-')
+                #courseRoom = 0
             except:
                 #Remove this error file when complete
                 err.write("%s\n" % item)
                 print "Error with course "+courseName
                 continue
+            #f.write("%s\n" % courseNumb)
+            #f.write("%s\n" % subject)
+            #f.write("%s\n" % courseNumber)
+            #f.write("%s\n" % courseSect)
+            #f.write("%s\n" % courseLoca)
+            #f.write("%s\n" % courseRoom)
+            #f.write("%s\n" % courseInst)
+            #f.write("%s\n" % courseTime)
+            #f.write("%s\n" % courseCapa)
+            #f.write("%s\n" % courseRegi)
+            #f.write("%s\n" % courseNumb)
+            #f.write("%s\n" % courseCred)
 
             ##IMPORT INTO DATABASE HERE##
-            c.execute("INSERT INTO sections VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (int(courseNumb[5:]), subject, courseNumber, courseSect, courseLoca, courseRoom, courseInst, courseTime, int(courseCapa[6:]), courseRegi,))
+            c.execute("INSERT INTO sections VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (int(courseNumb[5:]), subject, courseNumber, courseSect, courseLoca, courseRoom, courseInst, 
+            courseTime, int(courseCapa[6:]), courseRegi,))
             c.execute("SELECT * FROM courses WHERE course_number=?", [courseNumb])
             present = c.fetchone()
 
@@ -121,6 +141,6 @@ def Scraper():
                 c.execute("INSERT INTO courses VALUES (?, ?, ?, ?, ?)", (subject, courseNumb, courseCred, courseName, courseInfo,))#fixed error changed from insert into sections to insert into courses
             conn.commit()
             ##END DATABASE##
-
+        
     conn.close()
 Scraper()
