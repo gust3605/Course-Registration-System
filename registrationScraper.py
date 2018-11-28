@@ -102,7 +102,7 @@ def Scraper():
             c.execute("INSERT INTO sections VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (int(courseNumb[5:]), subject, courseNumber, courseSect, courseLoca, 
                                                                                     courseRoom, courseInst, courseTime, int(courseCapa[6:]), courseRegi,))
             #Incorrect number of bindings supplied. The current statement uses 1, and there are 10 supplied.
-            c.execute("SELECT * FROM courses WHERE course_number=?", [courseNumb])
+            c.execute("SELECT * FROM courses WHERE course_number=?", courseNumb)
             present = c.fetchone()
 
             if present is None:
