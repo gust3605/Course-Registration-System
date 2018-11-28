@@ -48,7 +48,6 @@ def Scraper():
         registered_courses,
         PRIMARY KEY (university_id)
         )''')
-    conn.commit()
     #END database
 
     #Loop get requests on each subject
@@ -59,6 +58,19 @@ def Scraper():
         err = open('error.txt', 'w')#Error out file
         html = response.read()
         soup = BeautifulSoup(html, 'html.parser') #Parse raw data into html
+        #filling department table
+        departTag= soup.find_all('h3')
+        if(len(departTag) > 1):
+            departNameAndTag = soup.find_all('h3')[1].get_text()
+        else:
+            departNameAndTag = soup.find_all('h3')[0].get_text()
+
+        if(len(departNameAndTag.split(':')) > 1):
+           
+            departmentTag = departNameAndTag.split(':')[0].strip()
+            departmentName = departNameAndTag.split(':')[1].strip()
+            c.execute("INSERT INTO departments VALUES (?, ?)",(departmentTag,departmentName))
+                
         courses = soup.find_all('div', class_="course") #Locate the course sections: ret=list
         for item in courses:
             #Exceptions could be replaced with 'if' statements
@@ -100,14 +112,12 @@ def Scraper():
                 continue
 
             ##IMPORT INTO DATABASE HERE##
-            c.execute("INSERT INTO sections VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (int(courseNumb[5:]), subject, courseNumber, courseSect, courseLoca, 
-                                                                                    courseRoom, courseInst, courseTime, int(courseCapa[6:]), courseRegi,))
-            #Incorrect number of bindings supplied. The current statement uses 1, and there are 10 supplied.
-            c.execute("SELECT * FROM courses WHERE course_number=?", courseNumb)
+            c.execute("INSERT INTO sections VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (int(courseNumb[5:]), subject, courseNumber, courseSect, courseLoca, courseRoom, courseInst, courseTime, int(courseCapa[6:]), courseRegi,))
+            c.execute("SELECT * FROM courses WHERE course_number=?", [courseNumb])
             present = c.fetchone()
 
             if present is None:
-                c.execute("INSERT INTO sections VALUES (?, ?, ?, ?, ?)", (subject, courseNumb, courseCred, courseName, courseInfo,))
+                c.execute("INSERT INTO courses VALUES (?, ?, ?, ?, ?)", (subject, courseNumb, courseCred, courseName, courseInfo,))#fixed error changed from insert into sections to insert into courses
             conn.commit()
             ##END DATABASE##
 
