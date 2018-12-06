@@ -2,13 +2,14 @@ var fs = require('fs');
 var path = require('path');
 var http = require('http');
 var url = require('url');
-var sqlite3 = require('sqlite3');
+var sqlite3 = require('sqlite3').verbose();
 
 //just a simple server that runs locally
 const hostname = '127.0.1';
 const port = 3000;
 
 var public_dir = path.join(__dirname, "public");
+
 
 console.log(public_dir);
 
@@ -41,6 +42,14 @@ const server = http.createServer((req,res)=>{
 		
 	}
 	
+	
+});
+
+var class_list = new Vue({
+	el: '#class_table',
+	data: {
+		results: []
+	}
 	
 });
 
