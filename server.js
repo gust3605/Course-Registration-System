@@ -16,6 +16,8 @@ console.log(public_dir);
 const server = http.createServer((req,res)=>{
 	var req_url = url.parse(req.url);
 	var filename = req_url.pathname.substring(1);
+	
+
 
 	if(filename === ""){
 		filename = "index.html";
@@ -39,7 +41,7 @@ const server = http.createServer((req,res)=>{
 		});
 	}
 	else{//handle post
-		
+		//possibility is query. Fill array with filter parameters then call the vue object query method
 	}
 	
 	
@@ -49,8 +51,15 @@ var class_list = new Vue({
 	el: '#class_table',
 	data: {
 		results: []
+	},
+	query_db(filter_by) {
+		let db = new sqlite3.Database('/classes.db', (err) => {
+			if (err) {
+				return console.error(err.message);
+			}
+			console.log('Connected to the in-memory SQlite database');
+		});
 	}
-	
 });
 
 server.listen(port,hostname,() =>{
