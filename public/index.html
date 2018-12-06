@@ -1,0 +1,35 @@
+<!doctype html>
+
+<html>
+	<!-- This is what a comment looks like -->
+	<head>
+		<title>Login</title>
+		<meta charset="utf-8">
+		<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+			<header></header>
+			<nav>
+				<ul>
+					<li><a href="index.html" class="current">Login</a></li>
+					<li><a href="registration.html">Course Registration</a></li>
+					<li><a href="aboutme.html">About Us</a></li>
+				</ul>
+			</nav>
+
+
+			<h1>Login</h1>
+			<form method="post">
+				University ID:
+				<input type="text" name="ID"><br>
+				Password:
+				<input type="text" name="Password"><br>
+				
+				<select name="Status">
+					<option value="Student">Student</option>
+					<option value="Faculty">Faculty</option>
+				</select>
+				<input type="submit" value="Login">
+			</form>
+	</body>
