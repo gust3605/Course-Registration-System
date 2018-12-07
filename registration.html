@@ -18,7 +18,17 @@
 				</ul>
 			</nav>
 			
-			
+		<div id="filters">
+		<h1>Select filters here:</h1>
+			<form action="/upload" method="POST" enctype="multipart/form-data">
+				Subject: 
+				<select name="subject">
+					<option value="all">ALL</option>
+				</select>
+				Course Name: <input type="text" name="course_name" /><br/>
+				<input id="to_query" type="submit" value="Submit" />
+			</form>
+		</div>
 			
 		<div id="class_table">
 			<table>
