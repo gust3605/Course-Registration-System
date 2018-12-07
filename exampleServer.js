@@ -49,6 +49,7 @@ var server = http.createServer((req, res) => {
             form.parse(req, (err, fields, files) => {
                 console.log(fields);
                 console.log(files);
+                console.log(fields.fname);
                 fs.copyFile(files.img_file[0].path, files.img_file[0].originalFilename, (err) => {
                     if (err) {
                         console.log('Could not copy file');
