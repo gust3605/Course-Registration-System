@@ -25,6 +25,12 @@ app.get('/', (res,req) => {
 	res.send('hello world');
 });
 
+app.get('/filter_subj',function(req, res){
+	console.log("app filter called");
+	var 
+	
+}
+
 //login
 app.post('/login',function(req,res){
 	console.log("app post login called");
@@ -66,8 +72,6 @@ app.post('/login',function(req,res){
 		});
 		res.end();
 	});
-
-	
 
 });
 

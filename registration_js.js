@@ -4,10 +4,10 @@ var class_list = new Vue({
 		results: []
 	},
 	query_db(filter_by) {
-		var query ='SELECT *
-					FROM courses
-					WHERE
-					';
+		var query ='
+			SELECT *
+			FROM courses
+			';
 		let db = new sqlite3.Database('/classes.db', (err) => {
 			if (err) {
 				return console.error(err.message);
