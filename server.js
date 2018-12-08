@@ -27,6 +27,16 @@ app.get('/', (res,req) => {
 
 app.get('/filter_subj', (req, res) => {
 	console.log("app filter called");	
+	var subj = '';
+	
+	var form = new multiparty.Form();
+	form.parse(req,function(err,fields,files){
+		res.writeHead(200, {'Content-Type' : 'text/plain'});
+		var response = fields;
+		var subj = response.subject[0];
+		
+		db.all('SELECT * FROM courses WHERE subject=?',subj,function(err,rows){
+	}
 });
 
 //login
