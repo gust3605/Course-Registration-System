@@ -72,6 +72,29 @@ app.get('/filter_subj', (req, res) => {
 	
 */
 
+//Upload
+app.post('/upload', function(req, res){
+	console.log("Updating registration table '/update'");
+	var request; //Submitted request
+	var results; //Resulting response from server (SQL Data)
+
+	var form = new multiparty.Form(); //Using multiparty for simplicity
+	form.parse(req,function(err,fields,files){
+		res.writeHead(200, {'Content-Type' : 'text/plain'});//Success response
+		var request = fields;
+		var subject = fields.subject[0];
+		db.all('SELECT * FROM sections WHERE subject=?', subject, function(err,rows){
+			if(err)
+			{
+				return console.log(err.message);
+			} else {
+				console.log("Correct data");
+				console.log(rows);
+			}
+		})
+	})
+});//end upload
+
 //login
 app.post('/login',function(req,res){
 	console.log("app post login called");
