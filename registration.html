@@ -20,8 +20,7 @@
 				</ul>
 			</nav>
 
-		
-		<div id="outer">
+			
 		<div id="filter_subj">
 		<h1>Select filters here:</h1>
 			<form id="myForm" method="POST">
@@ -224,93 +223,40 @@
 				<input type="submit" value="Submit" />
 			</form>
 		</div>
-		</div>
-		
-		<script>
-				$(document).ready(function(){
-					$("#myForm").submit(function(event){
-						event.preventDefault();
-						var num1 = 100;//$("#myForm").select.Subject;
-						//var num2 = 2;//$('#numb').val();
-						$.ajax({
-							method: 'post',
-							url: '/data',
-							data: JSON.stringify({num1}),
-							contentType: 'application/json',
-							success: function(data) {
-								console.log(data);
-								//tableData = data;
-								
-								var x = 0;
-								data.forEach(element => {
-									class_table.tableData[x] = element;
-									//class_table.data = 
-									console.log(element);
-									x = x + 1;
-								});
-							}
-//['Course Subject', 'Course Number', 'Course Section', 'Course Name', 'Building and Room', 
-//	  'Section Professors', 'Course Credits', 'Section crn', 'Section number registered/Capactity', 'Section Waitlist'
-			
-						})
-					});
-				});
-		</script>
-		
-		
 		<table id="class_table">
-			<thead>
-				<tr>
-					<th>Course Subject</th>
-					<th>Course Number</th>
-					<th>Course Section</th>
-					<th>Course Name</th>
-					<th>Building and Room</th>
-					<th>Section Professor</th>
-					<th>Course Credits</th>
-					<th>Section CRN</th>
-					<th>Resgistered / Capacity</th>
-					<th>Size of Waitlist</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr v-for="data in table_data">
-					<td>{{ data.CourseSubject }}</td>
-					<td>{{ data.CourseNumber }}</td>
-					<td>{{ data.CourseSection }}</td>
-					<td>{{ data.CourseName }}</td>
-					<td>{{ data.BuildingandRoom }}</td>
-					<td>{{ data.SectionProfessors }}</td>
-					<td>{{ data.CourseCredits }}</td>
-					<td>{{ data.Sectioncrn }}</td>
-					<td>{{ data.SectionnumberRegisteredCapactity }}</td>
-					<td>{{ data.SectionWaitlist }}</td>
-				</tr>
-			</tbody>
-		</table>	
-		
-		<div id="outer">
-			<div id="filter_subj">
-			<h1>Enter Course Number to Register</h1>
-				<form id="register" method="POST">
-					CRN: <input type="text" name="crn1" /><br/>
-					CRN: <input type="text" name="crn2" /><br/>
-					CRN: <input type="text" name="crn1" /><br/>
-					CRN: <input type="text" name="crn2" /><br/>
-					CRN: <input type="text" name="crn1" /><br/>
-					CRN: <input type="text" name="crn2" /><br/>
-					<input type="submit" value="Submit" />
-				</form>
-			</div>
-		</div>
-		
+				<thead>
+					<tr>
+						<th>Course Subject</th>
+						<th>Course Number</th>
+						<th>Course Section</th>
+						<th>Course Name</th>
+						<th>Building and Room</th>
+						<th>Section Professor</th>
+						<th>Course Credits</th>
+						<th>Section CRN</th>
+						<th>Resgistered/Capacity</th>
+						<th>Size of Waitlist</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="data in table_data">
+						<td v-for="temp in data">{{ temp }}</td>
+					</tr>
+				</tbody>
+			</table>
 		<script>
-			var class_table = new Vue({
+				var class_table = new Vue({
 				el: '#class_table',
 				data: {
-					table_data: [{CourseSubject: "Science", CourseNumber:10001, CourseSection:102, CourseName:"Apples", BuildingandRoom:"Basement", 
-					  SectionProfessors:"Bill", CourseCredits:4, Sectioncrn:4, SectionnumberRegisteredCapactity:15, SectionWaitlist:13}]
-				
+					table_data: [{building: "Science", capacity:10001, course_number:102, crn:"Apples", professors:"Basement", 
+					  registered:"Bill", room:4, section_number:4, subject:15, times:13}]
+				},
+				methods: {
+					refreshTable: function() {
+						//this.$refs.class_table.reload();
+						//$( "#class_table" ).load( "registration.html #class_table ");
+						$( "#class_table" ).load();
+					}
 				}
 				//created() {
 				//	table_data = {CourseSubject: "Science", CourseNumber:10001, CourseSection:102, CourseName:"Apples", BuildingandRoom:"Basement", 
@@ -332,7 +278,43 @@
 					//options: {
 						// see the options API
 					//}
-				});		
+				});	
+				$(document).ready(function(){
+					$("#myForm").submit(function(event){
+						event.preventDefault();
+						var num1 = 100;//$("#myForm").select.Subject;
+						//var num2 = 2;//$('#numb').val();
+						$.ajax({
+							method: 'post',
+							url: '/data',
+							data: JSON.stringify({num1}),
+							contentType: 'application/json',
+							success: function(data) {
+								console.log(data);
+								class_table.table_data = data;
+								console.log(class_table);
+								class_table.refreshTable();
+								/*var x = 0;
+								data.forEach(element => {
+									data[x] = element;
+									//class_table.data = 
+									console.log(element);
+									x = x + 1;
+								});*/
+							}
+//['Course Subject', 'Course Number', 'Course Section', 'Course Name', 'Building and Room', 
+//	  'Section Professors', 'Course Credits', 'Section crn', 'Section number registered/Capactity', 'Section Waitlist'
+			
+						})
+					});
+				});
+		</script>
+		
+		
+	
+		
+		<script>
+	
 		</script>
 		
 	</body>
