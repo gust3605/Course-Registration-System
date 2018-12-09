@@ -19,22 +19,7 @@
 					<li><a href="aboutme.html">About Us</a></li>
 				</ul>
 			</nav>
-			<script>
-				var class_table = new Vue({
-					el: '#class_table',
-					data: {
-						columns: [
-							{CourseSubject: "Science", CourseNumber:10001, CourseSection:102, CourseName:"Apples", BuildingandRoom:"Basement", 
-								  SectionProfessors:"Bill", CourseCredits:4, Sectioncrn:4, SectionnumberRegisteredCapactity:15, SectionWaitlist:13}],
-						tableData: [
-							{ id: 1, name: "John", age: "20" },
-						],
-						options: {
-							// see the options API
-						}
-					}				
-				})
-			</script>
+
 			
 		<div id="filter_subj">
 		<h1>Select filters here:</h1>
@@ -261,24 +246,75 @@
 									x = x + 1;
 								});
 							}
-							//['Course Subject', 'Course Number', 'Course Section', 'Course Name', 'Building and Room', 
-							//	  'Section Professors', 'Course Credits', 'Section crn', 'Section number registered/Capactity', 'Section Waitlist'
+//['Course Subject', 'Course Number', 'Course Section', 'Course Name', 'Building and Room', 
+//	  'Section Professors', 'Course Credits', 'Section crn', 'Section number registered/Capactity', 'Section Waitlist'
 			
 						})
 					});
 				});
-			</script>		
+		</script>
+		
+		
 		<table id="class_table">
 			<thead>
 				<tr>
-					<th v-for="col in columns">{{col}}</th>
+					<th>Course Subject</th>
+					<th>Course Number</th>
+					<th>Course Section</th>
+					<th>Course Name</th>
+					<th>Building and Room</th>
+					<th>Section Professor</th>
+					<th>Course Credits</th>
+					<th>Section CRN</th>
+					<th>Resgistered/Capacity</th>
+					<th>Size of Waitlist</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr v-for="data in tableData">
-					<td>{{data}}</td>
+				<tr v-for="data in table_data">
+					<td>{{ data.CourseSubject }}</td>
+					<td>{{ data.CourseNumber }}</td>
+					<td>{{ data.CourseSection }}</td>
+					<td>{{ data.CourseName }}</td>
+					<td>{{ data.BuildingandRoom }}</td>
+					<td>{{ data.SectionProfessors }}</td>
+					<td>{{ data.CourseCredits }}</td>
+					<td>{{ data.Sectioncrn }}</td>
+					<td>{{ data.SectionnumberRegisteredCapactity }}</td>
+					<td>{{ data.SectionWaitlist }}</td>
 				</tr>
 			</tbody>
-		</table>		
+		</table>	
+		
+		<script>
+			var class_table = new Vue({
+				el: '#class_table',
+				data: {
+					table_data: [{CourseSubject: "Science", CourseNumber:10001, CourseSection:102, CourseName:"Apples", BuildingandRoom:"Basement", 
+					  SectionProfessors:"Bill", CourseCredits:4, Sectioncrn:4, SectionnumberRegisteredCapactity:15, SectionWaitlist:13}]
+				}
+				//created() {
+				//	table_data = {CourseSubject: "Science", CourseNumber:10001, CourseSection:102, CourseName:"Apples", BuildingandRoom:"Basement", 
+				//	  SectionProfessors:"Bill", CourseCredits:4, Sectioncrn:4, SectionnumberRegisteredCapactity:15, SectionWaitlist:13}
+				//	console.log(table_data);
+				//},
+				//methods: {
+				//	table_data = {CourseSubject: "Science", CourseNumber:10001, CourseSection:102, CourseName:"Apples", BuildingandRoom:"Basement", 
+				//	  SectionProfessors:"Bill", CourseCredits:4, Sectioncrn:4, SectionnumberRegisteredCapactity:15, SectionWaitlist:13}
+
+				//}
+				
+					//columns: [
+					//	{CourseSubject: "Science", CourseNumber:10001, CourseSection:102, CourseName:"Apples", BuildingandRoom:"Basement", 
+					//		  SectionProfessors:"Bill", CourseCredits:4, Sectioncrn:4, SectionnumberRegisteredCapactity:15, SectionWaitlist:13}],
+					//tableData: [
+					//	{ id: 1, name: "John", age: "20" },
+					//],
+					//options: {
+						// see the options API
+					//}
+				});		
+		</script>
+		
 	</body>
 </html>
