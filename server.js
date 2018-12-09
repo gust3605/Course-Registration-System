@@ -6,6 +6,7 @@ var sqlite3 = require('sqlite3').verbose();
 const express = require('express');
 var multiparty = require('multiparty');
 var util = require('util');
+var mime = require('mime-types');
 
 //just a simple server that runs locally
 const hostname = '127.0.1';
@@ -18,11 +19,25 @@ let db = new sqlite3.Database('classes.db');
 
 
 const app = express();
+var router = express.Router();
 app.use(express.static(public_dir));
 
+
+///this ap get needs to be changed
 app.get('/', (res,req) => {
-	console.log("app get called");
-	res.send('hello world');
+	fs.readFile(path.join(public_dir, 'index.html'), (err,data)=>{
+		if (err){
+			res.writeHead(404, {'Content-Type':'text/plain'});
+			res.write(data);
+			res.end();
+		}
+		else{
+			var mime_type = mime.lookup('index.html') || 'text/plain';
+			res.writeHead(200, {'Content-Type': mime_type});
+			res.write(data);
+			res.end();
+		}
+	})
 });
 
 app.get('/filter_subj', (req, res) => {
@@ -31,13 +46,31 @@ app.get('/filter_subj', (req, res) => {
 	
 	var form = new multiparty.Form();
 	form.parse(req,function(err,fields,files){
-		res.writeHead(200, {'Content-Type' : 'text/plain'});
+		//res.writeHead(200, {'Content-Type' : 'text/plain'});
 		var response = fields;
 		var subj = response.subject[0];
 		
 		db.all('SELECT * FROM courses WHERE subject=?',subj,function(err,rows){
-	}
+			if (err){
+				return console.log(err.message);
+			}
+			else{
+
+			}
+		});
+
+
+	});
 });
+
+/*
+======================================
+	hey guys so i was doing some looking and since we cant	
+	use a form for the search box we can use some javascript 
+	on the search page to send an ajax request
+=====================================
+	
+*/
 
 //login
 app.post('/login',function(req,res){
@@ -48,37 +81,37 @@ app.post('/login',function(req,res){
 
 	var form = new multiparty.Form();
 	form.parse(req,function(err,fields,files){
-		res.writeHead(200, {'Content-Type' : 'text/plain'});
-		//res.write(recieved login)
+		
 		var response = fields;
 		var id = response.ID[0];
 		var status = response.Status[0];
-		//password needs to be hashed clientside js
 		var passwd = response.Password[0];
 		db.all('SELECT *FROM people WHERE university_id=?',id,function(err,rows){
 			if(err){
 				return console.log(err.message);
 			}
 			else{
-				console.log('not error in login');
 				if(rows.length == 0){
 					console.log("username does not exist create new username");
-					//redirect back to login
+					back2Login(res , 'username does not exist create new username');
+					
 				}//if no username is found
 				else{
 					if(passwd == rows[0].password){
 						console.log('login successful');
 						//login successful redirect to search page
+						gotoregister(res);
 					}
 					else{
 						console.log(passwd +' does not match passwd: '+ JSON.stringify(rows));
+						back2Login(res, 'bad Password');
 					}
 				}
 			}
 
 			
 		});
-		res.end();
+		//res.end();
 	});
 
 });
@@ -96,15 +129,10 @@ app.post('/register',function(req,res){
 	
 	form.parse(req,function(err, fields, files){
 		
-		res.writeHead(200, {'Content-Type': 'text/plain'});
+		//res.writeHead(200, {'Content-Type': 'text/plain'});
 		
-		//res.write('recieved registration:\n\n');
-		//res.end(util.inspect({fields,files : files}));
-
 
 		var response = fields;
-		
-
 		var id = response.ID[0];
 
 		//password needs to be hashed client side before being sent over
@@ -120,10 +148,11 @@ app.post('/register',function(req,res){
 			if(err){
 				return console.log(err.message);
 			}
+			back2Login(res, 'person successfully registered into server');
 			console.log('person successfully registered into server');
 		})
+		res.end();
 
-		res.end(util.inspect({fields:fields, files:files}));
 	});
 
 	
@@ -132,8 +161,64 @@ app.post('/register',function(req,res){
 
 app.listen(3000, ()=>console.log('server listening on port '+port));
 
+//function that redirects a user back to the login page
+//after registration of a failed login
+//also displays message describing reason for being sent back -- might want to remove/change
 
 
+function back2Login(res ,message){
+	fs.readFile(path.join(public_dir, 'index.html'), (err, data)=>{
+		if(err){
+			res.writeHead(404, {'Content-Type':'text/plain'});
+			res.write('Page not Found');
+			res.end();
+		}
+		else{
+			var mime_type = mime.lookup('index.html') || 'text/html';
+			res.writeHead(200,{'Content-Type': mime_type});
+			res.write(message);
+			res.write(data);
+			res.end();
+		}
+	})
+}
+
+
+
+function gotoregister(res){
+	fs.readFile(path.join(public_dir, 'registration.html'), (err, data)=>{
+		if(err){
+			res.writeHead(404, {'Content-Type':'text/plain'});
+			res.write('Page not Found');
+			res.end();
+		}
+		else{
+			var mime_type = mime.lookup('index.html') || 'text/html';
+			res.writeHead(200,{'Content-Type': mime_type});
+			res.write(data);
+			res.end();
+		}
+	})
+}
+
+
+
+
+function gotoabout(res){
+	fs.readFile(path.join(public_dir, 'aboutme.html'), (err, data)=>{
+		if(err){
+			res.writeHead(404, {'Content-Type':'text/plain'});
+			res.write('Page not Found');
+			res.end();
+		}
+		else{
+			var mime_type = mime.lookup('index.html') || 'text/html';
+			res.writeHead(200,{'Content-Type': mime_type});
+			res.write(data);
+			res.end();
+		}
+	})
+}
 
 /*
 
