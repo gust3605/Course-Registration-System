@@ -58,7 +58,7 @@ app.get('/filter_subj', (req, res) => {
 						return console.log(err.message);
 					}
 					else{
-
+						console.log(rows);
 					}
 				});						
 		}
@@ -68,7 +68,7 @@ app.get('/filter_subj', (req, res) => {
 						return console.log(err.message);
 					}
 					else{
-
+						console.log(rows);
 					}
 				});						
 		}
@@ -79,7 +79,7 @@ app.get('/filter_subj', (req, res) => {
 						return console.log(err.message);
 					}
 					else{
-
+						console.log(rows);
 					}
 				});				
 			}
@@ -90,7 +90,7 @@ app.get('/filter_subj', (req, res) => {
 						return console.log(err.message);
 					}
 					else{
-
+						console.log(rows);
 					}
 				});
 			}
