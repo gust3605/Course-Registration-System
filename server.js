@@ -46,23 +46,59 @@ app.get('/filter_subj', (req, res) => {
 	
 	var form = new multiparty.Form();
 	form.parse(req,function(err,fields,files){
-		//res.writeHead(200, {'Content-Type' : 'text/plain'});
+		res.writeHead(200, {'Content-Type' : 'text/plain'});
 		var response = fields;
 		var subj = response.subject[0];
+		var name = response.c_name[0];
+		var num = response.c_num[0];
 		
-		db.all('SELECT * FROM courses WHERE subject=?',subj,function(err,rows){
-			if (err){
-				return console.log(err.message);
-			}
-			else{
+		if(num !== "") {
+				db.all('SELECT * FROM sections WHERE course_number=?',function(err,rows){
+					if (err){
+						return console.log(err.message);
+					}
+					else{
 
+					}
+				});						
+		}
+		else if(name !== "") {
+				db.all('SELECT * FROM sections WHERE course_name=?',function(err,rows){
+					if (err){
+						return console.log(err.message);
+					}
+					else{
+
+					}
+				});						
+		}
+		else {
+			if(subj === 'ALL') {
+				db.all('SELECT * FROM sections',function(err,rows){
+					if (err){
+						return console.log(err.message);
+					}
+					else{
+
+					}
+				});				
 			}
-		});
+			else {
+				
+				db.all('SELECT * FROM sections WHERE subject=?',subj,function(err,rows){
+					if (err){
+						return console.log(err.message);
+					}
+					else{
+
+					}
+				});
+			}
+		}
 
 
 	});
-});
-
+}
 /*
 ======================================
 	hey guys so i was doing some looking and since we cant	
