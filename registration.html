@@ -6,6 +6,8 @@
 		<title>Course Registration</title>
 		<meta charset="utf-8">
 		<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/vue"></script>
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
@@ -17,10 +19,26 @@
 					<li><a href="aboutme.html">About Us</a></li>
 				</ul>
 			</nav>
+			<script>
+				var class_table = new Vue({
+					el: '#class_table',
+					data: {
+						columns: [
+							{CourseSubject: "Science", CourseNumber:10001, CourseSection:102, CourseName:"Apples", BuildingandRoom:"Basement", 
+								  SectionProfessors:"Bill", CourseCredits:4, Sectioncrn:4, SectionnumberRegisteredCapactity:15, SectionWaitlist:13}],
+						tableData: [
+							{ id: 1, name: "John", age: "20" },
+						],
+						options: {
+							// see the options API
+						}
+					}				
+				})
+			</script>
 			
 		<div id="filter_subj">
 		<h1>Select filters here:</h1>
-			<form action="/filter_subj" method="POST" enctype="multipart/form-data">
+			<form id="myForm" method="POST">
 				Subject: 
 				<select name="subject">
 					<option value="ALL">ALL</option>
@@ -217,42 +235,50 @@
 				</select>
 				Course Name: <input type="text" name="c_name" /><br/>
 				Course Number: <input type="text" name="c_num" /><br/>
-				<input id="to_query" type="submit" value="Submit" />
+				<input type="submit" value="Submit" />
 			</form>
 		</div>
-					
-		<div id="class_table">
-			<table>
-				<thead>
-					<tr>
-						<th>Course Subject</th>
-						<th>Course Number</th>
-						<th>Course Section</th>
-						<th>Course Name</th>
-						<th>Building and Room</th>
-						<th>Section Professors</th>
-						<th>Course Credits</th>
-						<th>Section crn</th>
-						<th>Section number registered/Capactity</th>
-						<th>Section Waitlist</th>
-					</tr>
-				</thead>
+		<script>
+				$(document).ready(function(){
+					$("#myForm").submit(function(event){
+						event.preventDefault();
+						var num1 = 100;//$("#myForm").select.Subject;
+						//var num2 = 2;//$('#numb').val();
+						$.ajax({
+							method: 'post',
+							url: '/data',
+							data: JSON.stringify({num1}),
+							contentType: 'application/json',
+							success: function(data) {
+								console.log(data);
+								//tableData = data;
+								
+								var x = 0;
+								data.forEach(element => {
+									class_table.tableData[x] = element;
+									//class_table.data = 
+									console.log(element);
+									x = x + 1;
+								});
+							}
+							//['Course Subject', 'Course Number', 'Course Section', 'Course Name', 'Building and Room', 
+							//	  'Section Professors', 'Course Credits', 'Section crn', 'Section number registered/Capactity', 'Section Waitlist'
 			
-				<tbody>
-					<tr v-for="course in results">
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+						})
+					});
+				});
+			</script>		
+		<table id="class_table">
+			<thead>
+				<tr>
+					<th v-for="col in columns">{{col}}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="data in tableData">
+					<td>{{data}}</td>
+				</tr>
+			</tbody>
+		</table>		
 	</body>
 </html>
