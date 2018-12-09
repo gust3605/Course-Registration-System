@@ -20,7 +20,8 @@
 				</ul>
 			</nav>
 
-			
+		
+		<div id="outer">
 		<div id="filter_subj">
 		<h1>Select filters here:</h1>
 			<form id="myForm" method="POST">
@@ -223,6 +224,8 @@
 				<input type="submit" value="Submit" />
 			</form>
 		</div>
+		</div>
+		
 		<script>
 				$(document).ready(function(){
 					$("#myForm").submit(function(event){
@@ -266,7 +269,7 @@
 					<th>Section Professor</th>
 					<th>Course Credits</th>
 					<th>Section CRN</th>
-					<th>Resgistered/Capacity</th>
+					<th>Resgistered / Capacity</th>
 					<th>Size of Waitlist</th>
 				</tr>
 			</thead>
@@ -286,12 +289,28 @@
 			</tbody>
 		</table>	
 		
+		<div id="outer">
+			<div id="filter_subj">
+			<h1>Enter Course Number to Register</h1>
+				<form id="register" method="POST">
+					CRN: <input type="text" name="crn1" /><br/>
+					CRN: <input type="text" name="crn2" /><br/>
+					CRN: <input type="text" name="crn1" /><br/>
+					CRN: <input type="text" name="crn2" /><br/>
+					CRN: <input type="text" name="crn1" /><br/>
+					CRN: <input type="text" name="crn2" /><br/>
+					<input type="submit" value="Submit" />
+				</form>
+			</div>
+		</div>
+		
 		<script>
 			var class_table = new Vue({
 				el: '#class_table',
 				data: {
 					table_data: [{CourseSubject: "Science", CourseNumber:10001, CourseSection:102, CourseName:"Apples", BuildingandRoom:"Basement", 
 					  SectionProfessors:"Bill", CourseCredits:4, Sectioncrn:4, SectionnumberRegisteredCapactity:15, SectionWaitlist:13}]
+				
 				}
 				//created() {
 				//	table_data = {CourseSubject: "Science", CourseNumber:10001, CourseSection:102, CourseName:"Apples", BuildingandRoom:"Basement", 

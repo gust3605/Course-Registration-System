@@ -16,18 +16,28 @@ header {
 }
 
 h1 {
-	text-indent: -9999px;
 	width: 940px;
-	height: 130px;
 	margin: 0px;
+	padding: 2%;
 }
 
 table {
 	table-layout:fixed;
-	width: 70%;
+	width: 90%;
 	text-align:center;
     margin-left:auto; 
     margin-right:auto;
+	border-collapse: collapse;
+
+}
+
+tr{
+	background-color: white;
+}
+
+td {
+	border: solid;
+	border-color: #d6d6d6;
 }
 
 th {
@@ -88,6 +98,15 @@ h3 {
 	width: 25%;
 	height: 100%;
 	float: left;
+}
+
+#outer {
+	text-align: center;
+	padding-bottom: 1%;
+}
+
+#filter_sunj {
+	display: inline block;
 }
 
 #hunterpic {
