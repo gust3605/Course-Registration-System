@@ -74,7 +74,14 @@ app.post('/class_reg', function(req, res) {
 	console.log("Class registering");
 	form.parse(req,function(err,fields,files){
 		res.writeHead(200, {'Content-Type' : 'text/plain'});
-		
+		var response = fields;
+		var id = response.id[0];
+		var crn1 = response.crn1[0];
+		var crn2 = response.crn2[0];
+		var crn3 = response.crn3[0];
+		var crn4 = response.crn4[0];
+		var crn5 = response.crn5[0];
+		var crn6 = response.crn6[0];
 	});
 });
 
