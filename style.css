@@ -101,6 +101,10 @@ h3 {
 	float: left;
 }
 
+button {
+	padding: 1%;
+}
+
 #outer {
 	text-align: center;
 	padding-bottom: 1%;

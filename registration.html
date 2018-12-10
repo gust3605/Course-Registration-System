@@ -221,6 +221,13 @@
 							<input id="to_query" type="submit" value="Submit" />
 						</form>
 					</div>
+					
+			<div id="table_b">
+			<div id="expand">
+				<h1 id="class_title">{{ cur.class_name }}</h1>
+				<p id="desc">{{ cur.desc }}</p>
+				<button type="button">Register</button>
+			</div>
 			<table id="class_table">
 				<thead>
 					<tr>
@@ -237,12 +244,32 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="data in table_data">
+					<tr onclick="expand_row(this.innerHTML)" v-for="data in table_data">
 						<td v-for="temp in data">{{ temp }}</td>
 					</tr>
 				</tbody>
 			</table>
+			</div>
+			
 		<script>
+				function expand_row(data) {
+					var rows = data;
+					console.log(rows);
+					document.getElementById("expand").style.display="inline";
+					document.getElementById("expand").style.width="40%";
+					document.getElementById("class_table").style.float="left";
+					document.getElementById("class_table").style.width="59%";
+				}
+		
+				var expanded = new Vue({
+					el: '#expand',
+					data: {
+						cur: {desc:"this is a math class", class_name:"Math"},
+						sections: [{}]
+					}
+				
+				});
+		
 				var class_table = new Vue({
 					el: '#class_table',
 					data: {
