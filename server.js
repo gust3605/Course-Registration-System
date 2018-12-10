@@ -52,55 +52,31 @@ app.get('/', (res,req) => {
 =====================================
 	
 */
-
-app.post('/data', function(req, res) {
-    //var a = parseFloat(req.body.num1);
-	//var b = parseFloat(req.body.num2);
-	console.log(req[0]);
-	var sum = 100;
-
-	db.all('SELECT * FROM sections WHERE subject=?',"CHEM",function(err,rows){
-		if (err){
-			return console.log(err.message);
-		}
-		else{
-			//console.log(rows);
-			res.send(rows);
-		}
-	});	
-
-
-})
-
-//UPLOAD 2
-
+//UPLOAD 
 app.get('/filter_subj', (req, res) => {
 	console.log("app filter called");	
 	var subj = req.query['field1'];
 	var name = req.query['field2'];
-	//var num  = req.query['field3'];
-	var form = new multiparty.Form();
-		//subj = response.subject[0];
-		/*var name = response.c_name[0];
-		//var num = response.c_num[0];
-		
+	var num  = req.query['field3'];
+
 		if(num !== "") {
-				db.all('SELECT * FROM sections WHERE course_number=?',function(err,rows){
+				db.all('SELECT * FROM sections WHERE course_number=?',num,function(err,rows){
 					if (err){
 						return console.log(err.message);
 					}
 					else{
 						res.send(rows);
+						return console.log("Data sent");
 					}
 				});						
 		}
 		else if(name !== "") {
-				db.all('SELECT * FROM sections WHERE course_name=?',function(err,rows){
+				db.all('SELECT * FROM sections WHERE course_name=?',name,function(err,rows){
 					if (err){
 						return console.log(err.message);
 					}
 					else{
-
+						res.send(rows);
 					}
 				});						
 		}
@@ -111,64 +87,7 @@ app.get('/filter_subj', (req, res) => {
 						return console.log(err.message);
 					}
 					else{
-
-					}
-				});				
-			}
-			else {*/
-				
-				db.all('SELECT * FROM sections WHERE subject=?',subj,function(err,rows){
-					if (err){
-						return console.log(err.message);
-					}
-					else{
 						res.send(rows);
-					}
-				});
-			//}
-	});
-
-//Upload
-app.post('/filter_subj', (req, res) => {
-	console.log("app filter called");	
-	var subj = '';
-	
-	var form = new multiparty.Form();
-	form.parse(req,function(err,fields,files){
-		res.writeHead(200, {'Content-Type' : 'text/plain'});
-		var response = fields;
-		var subj = response.subject[0];
-		var name = response.c_name[0];
-		var num = response.c_num[0];
-		
-		if(num !== "") {
-				db.all('SELECT * FROM sections WHERE course_number=?',function(err,rows){
-					if (err){
-						return console.log(err.message);
-					}
-					else{
-
-					}
-				});						
-		}
-		else if(name !== "") {
-				db.all('SELECT * FROM sections WHERE course_name=?',function(err,rows){
-					if (err){
-						return console.log(err.message);
-					}
-					else{
-
-					}
-				});						
-		}
-		else {
-			if(subj === 'ALL') {
-				db.all('SELECT * FROM sections',function(err,rows){
-					if (err){
-						return console.log(err.message);
-					}
-					else{
-
 					}
 				});				
 			}
@@ -179,16 +98,13 @@ app.post('/filter_subj', (req, res) => {
 						return console.log(err.message);
 					}
 					else{
-						//res.end(JSON.stringify(rows));
-						//$('class_table').html(rows);
-						return console.log(rows);
+						res.send(rows);
 					}
 				});
-			}
 		}
-	});
+	}
 });
-//end upload
+
 
 //login
 app.post('/login',function(req,res){
@@ -226,12 +142,8 @@ app.post('/login',function(req,res){
 					}
 				}
 			}
-
-			
-		});
-		//res.end();
+		});//res.end();
 	});
-
 });
 
 //register new account
@@ -242,14 +154,10 @@ app.post('/register',function(req,res){
 	var status = '';
 	var fName = '';
 	var lName = '';
-
 	var form = new multiparty.Form();
 	
 	form.parse(req,function(err, fields, files){
-		
-		//res.writeHead(200, {'Content-Type': 'text/plain'});
-		
-
+		//res.writeHead(200, {'Content-Type': 'text/plain'});	
 		var response = fields;
 		var id = response.ID[0];
 
@@ -262,7 +170,6 @@ app.post('/register',function(req,res){
 
 		//added passwd field
 		db.run('INSERT INTO people Values(?,?,?,?,?,?)', [id, passwd, status, fName, lName, courses] ,function(err){
-
 			if(err){
 				return console.log(err.message);
 			}
@@ -270,13 +177,8 @@ app.post('/register',function(req,res){
 			console.log('person successfully registered into server');
 		})
 		res.end();
-
-	});
-
-	
+	});	
 });
-
-
 app.listen(3000, ()=>console.log('server listening on port '+port));
 
 //function that redirects a user back to the login page
@@ -301,8 +203,6 @@ function back2Login(res ,message){
 	})
 }
 
-
-
 function gotoregister(res){
 	fs.readFile(path.join(public_dir, 'registration.html'), (err, data)=>{
 		if(err){
@@ -319,9 +219,6 @@ function gotoregister(res){
 	})
 }
 
-
-
-
 function gotoabout(res){
 	fs.readFile(path.join(public_dir, 'aboutme.html'), (err, data)=>{
 		if(err){
@@ -337,70 +234,3 @@ function gotoabout(res){
 		}
 	})
 }
-
-/*
-
-
-const server = http.createServer((req,res)=>{
-	var req_url = url.parse(req.url);
-	var filename = req_url.pathname.substring(1);
-	
-	if(filename === ""){
-		filename = "index.html";
-	}
-	console.log(filename);
-	
-
-	if (req.method === "GET"){
-		fs.readFile(path.join(public_dir, filename), (err, data) =>{
-			if(err){
-				res.writeHead(404, {'Content-Type': 'text/plain'});
-				res.write('could not find page.');
-				res.end();
-			}
-			else{
-				var mime_type = mime.lookup(filename) || 'text/plain';
-				res.writeHead(200, {'Content-Type': mime_type});
-				res.write(data);
-				res.end();
-			}
-		});
-	}
-	else{//handle post
-		//possibility is query. Fill array with filter parameters then call the vue object query method
-	}
-	
-	
-});
-
-var class_list = new Vue({
-	el: '#class_table',
-	data: {
-		results: []
-	},
-	query_db(filter_by) {
-		var query ='SELECT *FROM courses WHERE';
-		let db = new sqlite3.Database('/classes.db', (err) => {
-			if (err) {
-				return console.error(err.message);
-			}
-			console.log('Connected to the in-memory SQlite database');
-		});
-		
-		
-		db.all(query, [], (err, rows) => {
-			if (err) {
-				throw err;
-			}
-			results = rows;
-		}
-	}
-});
-
-server.listen(port,hostname,() =>{
-	console.log('server running at http://${hostname}:{port}/');
-	//console.log(filename);
-});
-
-
-*/
