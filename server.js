@@ -44,14 +44,6 @@ app.get('/', (res,req) => {
 	})
 });
 
-/*
-======================================
-	hey guys so i was doing some looking and since we cant	
-	use a form for the search box we can use some javascript 
-	on the search page to send an ajax request
-=====================================
-	
-*/
 //UPLOAD 
 app.get('/filter_subj', (req, res) => {
 	console.log("app filter called");	
@@ -111,7 +103,7 @@ app.post('/expander:c_numb', function(req, res) {
 	
 	db.all('SELECT sections.crn, sections.times, courses.description FROM sections INNER JOIN courses WHERE course_number=?',crn, function(err,rows) {
 		if(err) {
-			return.console.log(err.message);
+			return console.log(err.message);
 		} else {
 			res.send(rows);
 		}
@@ -132,6 +124,8 @@ app.post('/login',function(req,res){
 		var id = response.ID[0];
 		var status = response.Status[0];
 		var passwd = response.Password[0];
+		//passwd = md5(passwd);
+
 		db.all('SELECT *FROM people WHERE university_id=?',id,function(err,rows){
 			if(err){
 				return console.log(err.message);
@@ -146,7 +140,7 @@ app.post('/login',function(req,res){
 					if(passwd == rows[0].password){
 						console.log('login successful');
 						//login successful redirect to search page
-						gotoregister(res);
+						gotoregister(res, id, status);
 					}
 					else{
 						console.log(passwd +' does not match passwd: '+ JSON.stringify(rows));
@@ -188,9 +182,12 @@ app.post('/register',function(req,res){
 			back2Login(res, 'person successfully registered into server');
 			console.log('person successfully registered into server');
 		})
-		res.end();
 	});	
 });
+
+
+
+
 app.listen(3000, ()=>console.log('server listening on port '+port));
 
 //function that redirects a user back to the login page
@@ -215,7 +212,9 @@ function back2Login(res ,message){
 	})
 }
 
-function gotoregister(res){
+//gotoregister will write a h5 block containing the logged in users id which will be hidden with css
+//tag will be read by clientside js so the client knows the active users id.
+function gotoregister(res, university_id, status){
 	fs.readFile(path.join(public_dir, 'registration.html'), (err, data)=>{
 		if(err){
 			res.writeHead(404, {'Content-Type':'text/plain'});
@@ -223,8 +222,13 @@ function gotoregister(res){
 			res.end();
 		}
 		else{
-			var mime_type = mime.lookup('index.html') || 'text/html';
+
+			var idtag = '<h5 id = "userID">'+university_id+'</h5>';
+			var statusTag = '<h5 id = "userStatus">'+status+'</h5>';
+			var mime_type = mime.lookup('registration.html?'+university_id) || 'text/html';
 			res.writeHead(200,{'Content-Type': mime_type});
+			res.write(idtag);
+			res.write(statusTag);
 			res.write(data);
 			res.end();
 		}
@@ -246,3 +250,13 @@ function gotoabout(res){
 		}
 	})
 }
+
+
+
+
+
+
+
+
+
+
