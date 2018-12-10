@@ -217,22 +217,23 @@
 								<option value="WMST">WMST</option>
 							</select>
 							Course Name: <input type="text" name="course_name" id="courseName" /><br/>
+							Course Number: <input id="courseNumber" type="text" name="course_number"  /><br/>
 							<input id="to_query" type="submit" value="Submit" />
 						</form>
 					</div>
 			<table id="class_table">
 				<thead>
 					<tr>
-						<th>Course Subject</th>
+						<th>Subject</th>
 						<th>Course Number</th>
-						<th>Course Section</th>
-						<th>Course Name</th>
-						<th>Building and Room</th>
-						<th>Section Professor</th>
+						<th>Credits</th>
+						<th>Name</th>
+						<th>Description</th>
 						<th>Course Credits</th>
-						<th>Section CRN</th>
-						<th>Resgistered/Capacity</th>
+						<th>Section Professor</th>
+						<th>Section Times</th>
 						<th>Size of Waitlist</th>
+						<th>Enrolled</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -243,81 +244,40 @@
 			</table>
 		<script>
 				var class_table = new Vue({
-				el: '#class_table',
-				data: {
-					table_data: [{building: "Science", capacity:10001, course_number:102, crn:"Apples", professors:"Basement", 
-					  registered:"Bill", room:4, section_number:4, subject:15, times:13}]
-				},
-				methods: {
-					refreshTable: function() {
-						//this.$refs.class_table.reload();
-						//$( "#class_table" ).load( "registration.html #class_table ");
-						$( "#class_table" ).load();
+					el: '#class_table',
+					data: {
+						table_data: [{}]
+					},
+					methods: {
+						refreshTable: function() {
+							$( "#class_table" ).load();
+						}
 					}
-				}
-				//created() {
-				//	table_data = {CourseSubject: "Science", CourseNumber:10001, CourseSection:102, CourseName:"Apples", BuildingandRoom:"Basement", 
-				//	  SectionProfessors:"Bill", CourseCredits:4, Sectioncrn:4, SectionnumberRegisteredCapactity:15, SectionWaitlist:13}
-				//	console.log(table_data);
-				//},
-				//methods: {
-				//	table_data = {CourseSubject: "Science", CourseNumber:10001, CourseSection:102, CourseName:"Apples", BuildingandRoom:"Basement", 
-				//	  SectionProfessors:"Bill", CourseCredits:4, Sectioncrn:4, SectionnumberRegisteredCapactity:15, SectionWaitlist:13}
-
-				//}
-				
-					//columns: [
-					//	{CourseSubject: "Science", CourseNumber:10001, CourseSection:102, CourseName:"Apples", BuildingandRoom:"Basement", 
-					//		  SectionProfessors:"Bill", CourseCredits:4, Sectioncrn:4, SectionnumberRegisteredCapactity:15, SectionWaitlist:13}],
-					//tableData: [
-					//	{ id: 1, name: "John", age: "20" },
-					//],
-					//options: {
-						// see the options API
-					//}
 				});	
 
-					/*$.ajax({
-					url : '/filter_subj', // or whatever
-					dataType : 'json',
-					success : function (response) {
-						alert("The server says: " + response);
-					}
-				});*/
 				$(document).ready(function(){
 					$("#myForm").submit(function(event){
 						var selected = document.getElementById("sub");
 						var courseName = document.getElementById("courseName");
+						var courseNumber = document.getElementById("courseNumber");
 
 						event.preventDefault();
-						var num1 = 100;//$("#myForm").select.Subject;
-						//var num2 = 2;//$('#numb').val();
 						$.ajax({
 							method: 'GET',
 							url: '/filter_subj',
 							data: {field1: selected.options[ selected.selectedIndex ].value,
-								   field2: courseName.innerText},
+								   field2: courseName.value,
+								   field3: courseNumber.value},
 							contentType: 'application/json; charset=utf=8',
 							success: function(data) {
 								console.log(data);
 								class_table.table_data = data;
 								console.log(class_table);
 								class_table.refreshTable();
-							}
-//['Course Subject', 'Course Number', 'Course Section', 'Course Name', 'Building and Room', 
-//	  'Section Professors', 'Course Credits', 'Section crn', 'Section number registered/Capactity', 'Section Waitlist'
-			
+							}		
 						})
 					});
 				});
-		</script>
-		
-		
-	
-		
-		<script>
-	
-		</script>
-		
+		</script>		
 	</body>
 </html>
