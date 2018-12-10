@@ -5,6 +5,7 @@ body {
 	background-position: center;
 	font-family: Georgia, Times, serif;
 	margin: 10px;
+	word-wrap: break-word;
 }
 
 header {
@@ -117,4 +118,21 @@ h3 {
 	width: 25%;
 	height: 100%;
 	float: left;
+}
+
+#expand {
+	display: none;
+	float: right;
+	background-color: white;
+	border: solid;
+	border-color: rgb(109,68,156);
+	
+}
+
+#class_table {
+
+}
+
+#reg_but {
+
 }
