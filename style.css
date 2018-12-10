@@ -105,7 +105,11 @@ h3 {
 	padding-bottom: 1%;
 }
 
-#filter_sunj {
+#filter_subj {
+	display: inline block;
+}
+
+#register {
 	display: inline block;
 }
 

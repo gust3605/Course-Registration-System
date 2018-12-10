@@ -68,9 +68,15 @@ app.post('/data', function(req, res) {
 			res.send(rows);
 		}
 	});	
+});
 
-
-})
+app.post('/class_reg', function(req, res) {
+	console.log("Class registering");
+	form.parse(req,function(err,fields,files){
+		res.writeHead(200, {'Content-Type' : 'text/plain'});
+		
+	});
+});
 
 //Upload
 app.post('/filter_subj', (req, res) => {

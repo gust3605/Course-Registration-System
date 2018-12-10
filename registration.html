@@ -20,10 +20,10 @@
 				</ul>
 			</nav>
 
-			
+		<div id="outer">
 		<div id="filter_subj">
-		<h1>Select filters here:</h1>
-			<form id="myForm" method="POST">
+		<h1>Select filters here</h1>
+			<form id="myForm" method="POST" enctype="multipart/form-data">
 				Subject: 
 				<select name="subject">
 					<option value="ALL">ALL</option>
@@ -218,11 +218,27 @@
 					<option value="THTR">THTR</option>
 					<option value="WMST">WMST</option>
 				</select>
-				Course Name: <input type="text" name="c_name" /><br/>
+				Course Name: <input type="text" name="c_name" />
 				Course Number: <input type="text" name="c_num" /><br/>
 				<input type="submit" value="Submit" />
 			</form>
 		</div>
+		
+
+		<div id="register">
+			<h1>Enter Course CRN to Register</h1>
+				<form id="/class_reg" method="POST" enctype="multipart/form-data">
+					<input type="text" name="crn1"/>
+					<input type="text" name="crn2"/>
+					<input type="text" name="crn3"/><br/>
+					<input type="text" name="crn4"/>
+					<input type="text" name="crn5"/>
+					<input type="text" name="crn6"/><br/>
+					<input type="submit" value="Submit"/>
+				</form>
+		</div>
+		</div>
+		
 		<table id="class_table">
 				<thead>
 					<tr>
@@ -243,13 +259,14 @@
 						<td v-for="temp in data">{{ temp }}</td>
 					</tr>
 				</tbody>
-			</table>
+		</table>
+			
 		<script>
 				var class_table = new Vue({
 				el: '#class_table',
 				data: {
 					table_data: [{building: "Science", capacity:10001, course_number:102, crn:"Apples", professors:"Basement", 
-					  registered:"Bill", room:4, section_number:4, subject:15, times:13}]
+					  registered:"Bill", room:4, section_number:4, subject:15, times:13}, ]
 				},
 				methods: {
 					refreshTable: function() {
