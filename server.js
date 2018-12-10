@@ -280,7 +280,7 @@ function registerStudent(){
 
 
 	console.log('register student started');
-	db.all("SELECT people.registered_courses WHERE university_id == ?", id, (err,rows) =>{
+	db.all("SELECT people.registered_courses FROM people WHERE university_id == ?", id, (err,rows) =>{
 		if (err) {
 			console.log("register student error occured 1st query");
 			return console.log(err.message);
@@ -308,7 +308,7 @@ function registerStudent(){
 	});//db insert course into student
 
 	console.log('register student into class started')
-	db.all("SELECT sections.registered WHERE crn == ?", crn, (err,rows) =>{
+	db.all("SELECT sections.registered FROM sections WHERE crn == ?", crn, (err,rows) =>{
 		if(err){
 			return console.log(err.message);
 		}
