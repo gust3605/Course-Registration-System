@@ -224,13 +224,17 @@ function gotoregister(res, university_id, status){
 		else{
 
 			var idtag = '<h5 id = "userID">'+university_id+'</h5>';
-			var statusTag = '<h5 id = "userStatus">'+status+'</h5>';
+			//var statusTag = '<h5 id = "userStatus"> <span style = "display:none;>'+status+'</span></h5>';
+			var statusTag = '<h5 id = "userStatus"> '+status+'</h5>';
 			var mime_type = mime.lookup('registration.html?'+university_id) || 'text/html';
 			res.writeHead(200,{'Content-Type': mime_type});
 			res.write(idtag);
 			res.write(statusTag);
+			res.write("<br>");
 			res.write(data);
 			res.end();
+			//testing register student
+			registerStudent();
 		}
 	})
 }
@@ -251,8 +255,87 @@ function gotoabout(res){
 	})
 }
 
+//function that when passed a new crn and list of old classes checks for time conflicts
+function timeConflict(newcrn, currclasses){
+
+	return false;
+}
+//function used to register students into a section given id and 
+//currently set up to use dummy vars for testing 
+function registerStudent(){
+	console.log('register student called');
+	var id = 4;
+	var crn = 20003;
+	var regCourses = '';
+	var students = '';
+
+	//error checking
+		//if class is full
+		//if there is a time conflict
+		//if student is already registered for the class
+
+	///
 
 
+
+
+	console.log('register student started');
+	db.all("SELECT people.registered_courses WHERE university_id == ?", id, (err,rows) =>{
+		if (err) {
+			console.log("register student error occured 1st query");
+			return console.log(err.message);
+		}
+		else{
+			// need to check if class is full check to see if class is full
+			//registering inserting course crn into users courses field
+			console.log('people registered courses row:');
+			console.log(rows[0].registered_courses);
+
+			regCourses = rows[0].registered_courses;
+			
+			//adding selected class into the registered courses
+			regCourses = regCourses + "," + crn;
+			db.run('UPDATE people SET registered_courses = "'+regCourses+'" WHERE university_id == ?', id,(err,rows) =>{
+				if (err) {
+					return console.log(err.message);
+				}
+				else{
+					console.log('course successfully registered to student');
+				}
+			});//db updating registered corses
+
+		}
+	});//db insert course into student
+
+	console.log('register student into class started')
+	db.all("SELECT sections.registered WHERE crn == ?", crn, (err,rows) =>{
+		if(err){
+			return console.log(err.message);
+		}
+		else{
+			students = rows[0].registered;
+			console.log('students registered for sections:');
+			console.log(students);
+
+			students = students +","+ id;
+			db.run('UPDATE sections SET registered = "'+students+'"WHERE crn == ?', crn, (err,rows)=>{
+				if (err) {
+					return console.log(err.message);
+				}
+				else{
+					console.log("student successfully added to class");
+				}
+			});
+		}
+
+
+	});//db insert student into course
+	 
+	
+	/*currently using dummy variables until the table is completed
+	after it is we need to get the crn of the row. */
+
+}// register student
 
 
 
