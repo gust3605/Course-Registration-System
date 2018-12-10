@@ -105,6 +105,18 @@ app.get('/filter_subj', (req, res) => {
 	}
 });
 
+app.post('/expander:c_numb', function(req, res) {
+	console.log("more details on course");
+	var crn = req.params.c_numb;
+	
+	db.all('SELECT sections.crn, sections.times, courses.description FROM sections INNER JOIN courses WHERE course_number=?',crn, function(err,rows) {
+		if(err) {
+			return.console.log(err.message);
+		} else {
+			res.send(rows);
+		}
+	});
+});
 
 //login
 app.post('/login',function(req,res){
