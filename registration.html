@@ -252,14 +252,30 @@
 			</div>
 			
 		<script>
+			var rows = "";
+		
 				function expand_row(data) {
-					var rows = data;
-					console.log(rows);
-					document.getElementById("expand").style.display="inline";
-					document.getElementById("expand").style.width="40%";
-					document.getElementById("class_table").style.float="left";
-					document.getElementById("class_table").style.width="59%";
+					
+					if(data === rows){
+						console.log(rows);
+						console.log("close");
+						document.getElementById("expand").style.display="none";
+						document.getElementById("expand").style.width="0%";
+						document.getElementById("class_table").style.float="none";
+						document.getElementById("class_table").style.width="90%";	
+						rows = "";
+					} else {
+						rows = data;
+						console.log("open");
+						console.log(rows);
+						document.getElementById("expand").style.display="inline";
+						document.getElementById("expand").style.width="40%";
+						document.getElementById("class_table").style.float="left";
+						document.getElementById("class_table").style.width="59%";
+					}
 				}
+				
+
 		
 				var expanded = new Vue({
 					el: '#expand',
@@ -273,7 +289,7 @@
 				var class_table = new Vue({
 					el: '#class_table',
 					data: {
-						table_data: [{}]
+						table_data: [{subject:"MATH", courseNumber:"110", credits:4, name:"Intro Math", desc:"holdup", cc:2, prof:"tom", time:"8:00", wl:10, en:5}]
 					},
 					methods: {
 						refreshTable: function() {
