@@ -56,7 +56,7 @@ app.get('/', (res,req) => {
 app.post('/data', function(req, res) {
     //var a = parseFloat(req.body.num1);
 	//var b = parseFloat(req.body.num2);
-	console.log("Sending");
+	console.log(req[0]);
 	var sum = 100;
 
 	db.all('SELECT * FROM sections WHERE subject=?',"CHEM",function(err,rows){
@@ -64,26 +64,69 @@ app.post('/data', function(req, res) {
 			return console.log(err.message);
 		}
 		else{
-			console.log(rows);
+			//console.log(rows);
 			res.send(rows);
 		}
 	});	
-});
 
-app.post('/class_reg', function(req, res) {
-	console.log("Class registering");
-	form.parse(req,function(err,fields,files){
-		res.writeHead(200, {'Content-Type' : 'text/plain'});
-		var response = fields;
-		var id = response.id[0];
-		var crn1 = response.crn1[0];
-		var crn2 = response.crn2[0];
-		var crn3 = response.crn3[0];
-		var crn4 = response.crn4[0];
-		var crn5 = response.crn5[0];
-		var crn6 = response.crn6[0];
+
+})
+
+//UPLOAD 2
+
+app.get('/filter_subj', (req, res) => {
+	console.log("app filter called");	
+	var subj = req.query['field1'];
+	var name = req.query['field2'];
+	//var num  = req.query['field3'];
+	var form = new multiparty.Form();
+		//subj = response.subject[0];
+		/*var name = response.c_name[0];
+		//var num = response.c_num[0];
+		
+		if(num !== "") {
+				db.all('SELECT * FROM sections WHERE course_number=?',function(err,rows){
+					if (err){
+						return console.log(err.message);
+					}
+					else{
+						res.send(rows);
+					}
+				});						
+		}
+		else if(name !== "") {
+				db.all('SELECT * FROM sections WHERE course_name=?',function(err,rows){
+					if (err){
+						return console.log(err.message);
+					}
+					else{
+
+					}
+				});						
+		}
+		else {
+			if(subj === 'ALL') {
+				db.all('SELECT * FROM sections',function(err,rows){
+					if (err){
+						return console.log(err.message);
+					}
+					else{
+
+					}
+				});				
+			}
+			else {*/
+				
+				db.all('SELECT * FROM sections WHERE subject=?',subj,function(err,rows){
+					if (err){
+						return console.log(err.message);
+					}
+					else{
+						res.send(rows);
+					}
+				});
+			//}
 	});
-});
 
 //Upload
 app.post('/filter_subj', (req, res) => {
