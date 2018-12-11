@@ -44,6 +44,14 @@ app.get('/', (res,req) => {
 	})
 });
 
+/*
+======================================
+	hey guys so i was doing some looking and since we cant	
+	use a form for the search box we can use some javascript 
+	on the search page to send an ajax request
+=====================================
+	
+*/
 //UPLOAD 
 app.get('/filter_subj', (req, res) => {
 	console.log("app filter called");	
@@ -85,7 +93,7 @@ app.get('/filter_subj', (req, res) => {
 			}
 			else {
 				
-				db.all('SELECT * FROM sections WHERE subject=?',subj,function(err,rows){
+				db.all('SELECT sections.subject, sections.course_number, sections.section_number, courses.name, sections.building, sections.professors, courses.credits, sections.crn, sections.registered, sections.capacity FROM sections INNER JOIN courses WHERE sections.subject=?',subj,function(err,rows){
 					if (err){
 						return console.log(err.message);
 					}
@@ -124,8 +132,6 @@ app.post('/login',function(req,res){
 		var id = response.ID[0];
 		var status = response.Status[0];
 		var passwd = response.Password[0];
-		//passwd = md5(passwd);
-
 		db.all('SELECT *FROM people WHERE university_id=?',id,function(err,rows){
 			if(err){
 				return console.log(err.message);
@@ -140,7 +146,7 @@ app.post('/login',function(req,res){
 					if(passwd == rows[0].password){
 						console.log('login successful');
 						//login successful redirect to search page
-						gotoregister(res, id, status);
+						gotoregister(res);
 					}
 					else{
 						console.log(passwd +' does not match passwd: '+ JSON.stringify(rows));
@@ -182,12 +188,9 @@ app.post('/register',function(req,res){
 			back2Login(res, 'person successfully registered into server');
 			console.log('person successfully registered into server');
 		})
+		res.end();
 	});	
 });
-
-
-
-
 app.listen(3000, ()=>console.log('server listening on port '+port));
 
 //function that redirects a user back to the login page
@@ -212,9 +215,7 @@ function back2Login(res ,message){
 	})
 }
 
-//gotoregister will write a h5 block containing the logged in users id which will be hidden with css
-//tag will be read by clientside js so the client knows the active users id.
-function gotoregister(res, university_id, status){
+function gotoregister(res){
 	fs.readFile(path.join(public_dir, 'registration.html'), (err, data)=>{
 		if(err){
 			res.writeHead(404, {'Content-Type':'text/plain'});
@@ -222,19 +223,10 @@ function gotoregister(res, university_id, status){
 			res.end();
 		}
 		else{
-
-			var idtag = '<h5 id = "userID">'+university_id+'</h5>';
-			//var statusTag = '<h5 id = "userStatus"> <span style = "display:none;>'+status+'</span></h5>';
-			var statusTag = '<h5 id = "userStatus"> '+status+'</h5>';
-			var mime_type = mime.lookup('registration.html?'+university_id) || 'text/html';
+			var mime_type = mime.lookup('index.html') || 'text/html';
 			res.writeHead(200,{'Content-Type': mime_type});
-			res.write(idtag);
-			res.write(statusTag);
-			res.write("<br>");
 			res.write(data);
 			res.end();
-			//testing register student
-			registerStudent();
 		}
 	})
 }
@@ -254,92 +246,3 @@ function gotoabout(res){
 		}
 	})
 }
-
-//function that when passed a new crn and list of old classes checks for time conflicts
-function timeConflict(newcrn, currclasses){
-
-	return false;
-}
-//function used to register students into a section given id and 
-//currently set up to use dummy vars for testing 
-function registerStudent(){
-	console.log('register student called');
-	var id = 4;
-	var crn = 20003;
-	var regCourses = '';
-	var students = '';
-
-	//error checking
-		//if class is full
-		//if there is a time conflict
-		//if student is already registered for the class
-
-	///
-
-
-
-
-	console.log('register student started');
-	db.all("SELECT people.registered_courses FROM people WHERE university_id == ?", id, (err,rows) =>{
-		if (err) {
-			console.log("register student error occured 1st query");
-			return console.log(err.message);
-		}
-		else{
-			// need to check if class is full check to see if class is full
-			//registering inserting course crn into users courses field
-			console.log('people registered courses row:');
-			console.log(rows[0].registered_courses);
-
-			regCourses = rows[0].registered_courses;
-			
-			//adding selected class into the registered courses
-			regCourses = regCourses + "," + crn;
-			db.run('UPDATE people SET registered_courses = "'+regCourses+'" WHERE university_id == ?', id,(err,rows) =>{
-				if (err) {
-					return console.log(err.message);
-				}
-				else{
-					console.log('course successfully registered to student');
-				}
-			});//db updating registered corses
-
-		}
-	});//db insert course into student
-
-	console.log('register student into class started')
-	db.all("SELECT sections.registered FROM sections WHERE crn == ?", crn, (err,rows) =>{
-		if(err){
-			return console.log(err.message);
-		}
-		else{
-			students = rows[0].registered;
-			console.log('students registered for sections:');
-			console.log(students);
-
-			students = students +","+ id;
-			db.run('UPDATE sections SET registered = "'+students+'"WHERE crn == ?', crn, (err,rows)=>{
-				if (err) {
-					return console.log(err.message);
-				}
-				else{
-					console.log("student successfully added to class");
-				}
-			});
-		}
-
-
-	});//db insert student into course
-	 
-	
-	/*currently using dummy variables until the table is completed
-	after it is we need to get the crn of the row. */
-
-}// register student
-
-
-
-
-
-
-
