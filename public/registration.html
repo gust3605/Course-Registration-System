@@ -217,8 +217,8 @@
 								<option value="THTR">THTR</option>
 								<option value="WMST">WMST</option>
 							</select>
-							Course Name: <input type="text" name="course_name" id="courseName" /><br/>
-							Course Number: <input id="courseNumber" type="text" name="course_number"  /><br/>
+							Course Number: <input type="text" name="course_name" id="courseName" /><br/>
+							Section CRN: <input id="courseNumber" type="text" name="course_number"  /><br/>
 							<input id="to_query" type="submit" value="Submit" />
 						</form>
 					</div>
@@ -246,21 +246,30 @@
 			<table id="class_table">
 				<thead>
 					<tr>
-						<th>Subject</th>
+						<th>Course Subject</th>
 						<th>Course Number</th>
-						<th>Credits</th>
-						<th>Name</th>
-						<th>Description</th>
-						<th>Course Credits</th>
+						<th>Course Section</th>
+						<th>Course Name</th>
+						<th>Building and Room</th>
 						<th>Section Professor</th>
-						<th>Section Times</th>
-						<th>Size of Waitlist</th>
-						<th>Enrolled</th>
+						<th>Course Credits</th>
+						<th>Section CRN</th>
+						<th>Size of Registered</th>
+						<th>Waitlist</th>
 					</tr>
 				</thead>
-				<tbody>
-					<tr onclick="expand_row(this.childNodes[1].innerHTML, this.childNodes[3].innerHTML)" v-for="data in table_data">	<!-- should grab the course number(not crn) then the course name on click -->
+				<tbody v-for="(data, index) in table_data" :key="index">
+					<tr onclick="class_table.test = !class_table.test" >	<!-- should grab the course number(not crn) then the course name on click -->
 						<td v-for="temp in data">{{ temp }}</td>
+					</tr>
+					<tr v-if="test">
+						<td colspan="5">I exist</td>
+						<td colspan="5">
+							<form action="" method="get">
+								Register for the course:
+								<button name="subject" type="submit" data-value="StudentID" value="CRN">Register</button>
+							</form>
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -268,11 +277,6 @@
 			
 		<script>
 			var cur_row = "";
-			var userID = document.getElementById("userID").textContent;
-			var userStatus = document.getElementById("userStatus").textContent;
-			console.log(userID);
-			console.log(userStatus);
-
 		
 				function expand_row(course_numb, name) {
 					
@@ -324,7 +328,8 @@
 				var class_table = new Vue({
 					el: '#class_table',
 					data: {
-						table_data: [{}]
+						table_data: [{}],
+						test: [{}]
 					},
 					methods: {
 						refreshTable: function() {
@@ -350,6 +355,11 @@
 							success: function(data) {
 								console.log(data);
 								class_table.table_data = data;
+								var i = 0
+								data.forEach(element => {
+									class_table.test[i] = false;
+									i++;
+								});
 								console.log(class_table);
 								class_table.refreshTable();
 							}		
