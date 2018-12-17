@@ -97,6 +97,12 @@ h3 {
 	float: left;
 }
 
+#mikepic {
+	width: 25%;
+	height: 100%;
+	float: left;
+}
+
 #intro{
 	width: 70%;
 	height: 80%;
