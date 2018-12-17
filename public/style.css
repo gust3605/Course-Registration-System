@@ -47,6 +47,7 @@ tr:nth-child(even) {
 }
 
 
+
 nav {
 	clear: both;
 	color: #ffffff;
@@ -96,8 +97,25 @@ h3 {
 	float: left;
 }
 
-#mikepic {
-	width: 25%;
-	height: 100%;
-	float: left;
+#intro{
+	width: 70%;
+	height: 80%;
+	position: absolute;
+
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+
 }
+
+#intro h1{
+	font-weight: normal;
+}
+
+#intro p{
+	width: 70%;
+	text-align: left;
+	
+}
+
