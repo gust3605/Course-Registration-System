@@ -233,7 +233,7 @@ function gotoregister(res, university_id, status){
 			res.write(data);
 			res.end();
 			//testing register student
-			registerStudent();
+			//registerStudent();
 		}
 	})
 }
