@@ -257,13 +257,13 @@ function gotoabout(res){
 //function that when passed a new crn and list of old classes checks for time conflicts
 function timeConflict(id, newCrn){
 
-	console.log("timeConflict called");
+	console.log("=======================timeConflict called=================");
 	var currSections='';
 	var checkCrn;
 	var newtime = '';
 	var temptime = '';
 
-	db.all("SELECT sections WHERE crn == ?",crn,(err,rows)=>{
+	db.all("SELECT * FROM sections WHERE crn == ?",newCrn,(err,rows)=>{
 		if (err) {
 			console.log('timeconflict query1 error');
 			return console.log(err.message);
@@ -274,14 +274,14 @@ function timeConflict(id, newCrn){
 		}
 	});//db get newtime
 
-	db.all("SELECT people WHERE university_id == ?", id,(err,rows)=>{
+	db.all("SELECT * FROM people WHERE university_id == ?", id,(err,rows)=>{
 		if(err){
 			console.log("timeconflict query2 error");
 			return console.log(err.message);
 		}
 		else{
 			currSections = rows[0].registered_courses.split(',');
-			console.log(currSections);
+			console.log('current sections = ' + currSections);
 
 
 			//if there are no current sections
@@ -294,20 +294,30 @@ function timeConflict(id, newCrn){
 				//if there are sections that the student has already signed up for 
 				// need to loop through the registered sections and query the db for each one to get its time
 				for (var i = 0; i < currSections.length; i++){
-					checkCrn = currSections[i]
+					checkCrn = currSections[i];
 
-					db.all("SELECT sections WHERE crn = ?", checkCrn,(err,rows)=>{
-						if (err){
-							console.log('timeConflict loop db call error');
-							return console.log(err.message);
-						}
-						else{
-							temptime = rows[0].times;
-							if(temptime == newtime){
-								return true;
+					console.log('checkCrn = '+checkCrn);
+
+					if(checkCrn.length > 2){
+						db.all("SELECT * FROM sections WHERE crn = ?", checkCrn,(err,rows)=>{
+							if (err){
+								console.log('timeConflict loop db call error');
+								return console.log(err.message);
 							}
-						}
-					});//loop db call
+							else {
+								console.log('rows below');
+								console.log(JSON.stringify(rows));
+								temptime = rows[0].times;
+								if(temptime == newtime){
+									return true;
+								}
+							}
+						});//loop db call
+					}
+					else{
+						console.log('crn too short');
+					}
+					
 				}
 				//if no matching times are detected than false is returned
 				return false;
@@ -322,28 +332,28 @@ function timeConflict(id, newCrn){
 
 //function that checks if course if full returns true if so 
 function sectionfull(crn){
-	console.log('section full called for crn: '+crn);
+	console.log('=====================section full called for crn: '+crn+'======================');
 	var section;
 	var capacity;
 	var registered;
-	db.all("SELECT sections WHERE crn == ?",crn,(err,rows)=>{
+	db.all("SELECT * FROM sections WHERE crn == ?",crn,(err,rows)=>{
 		if(err){
 			console.log("sectionfull query error");
 			return console.log(err.message);
 		}
 		else{
 			section = rows[0]
-			console.log(section);
-			capacity = section.ca
-			pacity;
+			console.log('sectionfull section = '+section);
+			capacity = section.capacity;
 			registered = section.registered;
-
-			if(capacity < registered){
-				console.log("capacity: " + capacity + "is less than registered: "+ registered);
+			console.log('sectionfull cpacity = '+capacity);
+			console.log('sectionfull registered = '+registered);
+			if(registered < capacity){
+				console.log('=============Section Full registered is less than capacity return false=======');
 				return false;
 			}
 			else{
-				console.log('class is at or above capacity');
+				console.log('=========sectionfull capacity is at or greater than registered========');
 				return true;
 			}
 		}
@@ -352,22 +362,26 @@ function sectionfull(crn){
 
 //function that checks if a particular student id is already registered in class
 function isregistered(id,crn){
-	//
+	console.log('=========isregistered called==========');
 	var courses;
-	db.all("SELECT people.registered_courses FROM people WHERE university_id == ?", id, (err,rows) =>{
+	db.all("SELECT registered_courses FROM people WHERE university_id == ?", id, (err,rows) =>{
 		if (err) {
 			console.log("isregistered query error");
 			return console.log(err.message);
 		}
 		else{
+			console.log("is registered rows:" +JSON.stringify(rows[0]));
 			courses = rows[0].registered_courses.split(',');
+			console.log('currently registered courses =' + courses);
 			for (var i = 0; i < courses.length; i++) {
 				if(courses[i] == crn){
 					//student is registered for course return true
+					console.log('====================isregistered return true==============');
 					return true;
 				}
 			}
 			//student is not registered in course
+			console.log('====================isregistered return false===================');
 			return false;
 		}
 	}); //db all
@@ -378,26 +392,33 @@ function isregistered(id,crn){
 //function used to register students into a section given id and 
 //currently set up to use dummy vars for testing 
 function registerStudent(){
-	console.log('register student called');
-	var id = 4;
-	var crn = 20003;
+	console.log('-----------register student called--------------');
+	var id = 7;
+	var crn = 20637;
 	var regCourses = '';
-	var students = '';
+	var students = '';	
 
+	/*
 	if (isregistered(id, crn)){
 		//student is already registered dont do anything
 		console.log("student is already registered for course");
 	}
 
 	else if(sectionfull(crn)){
-		//if section if full prevent student from registering
+		//if section if full prevent student from 
+		//if section is full than append a waitlist to crn inserted to student
 		console.log("section is full");
 	}
 
-	else if(timeConflict(id, crn)){
+	*/
+
+	if(timeConflict(id, crn)){
 		console.log("timeconflict detected");
 	}
 
+
+
+	/*
 	else{
 
 		console.log('register student started');
@@ -452,9 +473,7 @@ function registerStudent(){
 		});//db insert student into course
 
 	}//else--NO CONFLICTS
-
 	
-	/*currently using dummy variables until the table is completed
-	after it is we need to get the crn of the row. */
+	*/
 
 }// register student
