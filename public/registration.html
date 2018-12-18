@@ -282,53 +282,7 @@
 			console.log(user_id);
 			var user_status = document.getElementById("userStatus").textContent;
 			console.log(user_status);
-		
-				function expand_row(course_numb, name) {
-					
-					if(name === cur_row){		//this is when clicking on the same row, will close the content
-						console.log("close");
-						console.log(cur_row);
-						document.getElementById("expand").style.display="none";
-						document.getElementById("expand").style.width="0%";
-						document.getElementById("class_table").style.float="none";
-						document.getElementById("class_table").style.width="90%";	
-						cur_row = "";
-					} else {					//different row, will change the content
-						cur_row = name;
-						console.log("open");
-						console.log(cur_row);
-						expanded.update_expanded(cur_row, course_numb);
-						document.getElementById("expand").style.display="inline";
-						document.getElementById("expand").style.width="40%";
-						document.getElementById("class_table").style.float="left";
-						document.getElementById("class_table").style.width="59%";
-					}
-				}
-		
-				var expanded = new Vue({
-					el: '#expand',
-					data: {
-						cur: [{class_name:"", desc:""}],
-						sections: [{}]			//will hold elements in the small table when expanded
-					},
-					methods: {
-						update_expanded: function(name, c_numb) {
-							document.getElementById("class_title").innerHTML = name;	//sets the title in expanded portion
-							//console.log(class_name);
-							var xhttp = new XMLHttpRequest();//STARTS TO GET MESSY HERE - WORKS UP TO HERE
-							
-							xhttp.onreadystatechange = function() {
-								if(xhttp.readyState === 4) {
-									sections = xhttp.response;	//should set sections to the response, three columns {crn, time, description}
-									console.log(sections);
-									document.getElementById("desc").innerHTML = sections; //NEEDS TO BE CHANGED TO BE THE DESCRIPTION. NOT SURE HOW THE DATA IS BEING SENT BACK BUT SHOULD BE THIRD COLUMN IN THE TABLE - description only used here
-								}
-							}
-							xhttp.open('POST', "/server.js", true);
-							xhttp.send(c_numb);
-						}
-					}				
-				});
+	
 		
 				var class_table = new Vue({
 					el: '#class_table',
