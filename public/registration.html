@@ -277,8 +277,10 @@
 			
 		<script>
 			var cur_row = "";
-			var user_id = document.getElementById("userID").getText();
-			var user_status = document.getElementByID("userStatus").getText();
+			var user_id = document.getElementById("userID").textContent;
+			console.log(user_id);
+			var user_status = document.getElementById("userStatus").textContent;
+			console.log(user_status);
 		
 				function expand_row(course_numb, name) {
 					
