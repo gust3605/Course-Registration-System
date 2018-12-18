@@ -259,10 +259,11 @@
 					</tr>
 				</thead>
 				<tbody v-for="(data, index) in table_data" :key="index">
-					<tr onclick="class_table.test = !class_table.test" >	<!-- should grab the course number(not crn) then the course name on click -->
+					<tr v-on:click="test[index] = !test[index]; refreshTable();">
+							<!-- should grab the course number(not crn) then the course name on click -->
 						<td v-for="temp in data">{{ temp }}</td>
 					</tr>
-					<tr v-if="test">
+					<tr v-if="shouldShow(index)">
 						<td colspan="5">I exist</td>
 						<td colspan="5">
 							<form action="" method="get">
@@ -333,11 +334,14 @@
 					el: '#class_table',
 					data: {
 						table_data: [{}],
-						test: [{}]
+						test: []
 					},
 					methods: {
 						refreshTable: function() {
-							$( "#class_table" ).load();
+							this.$forceUpdate();
+						},
+						shouldShow: function(index) {
+							return this.test[index];
 						}
 					}
 				});	
@@ -357,12 +361,13 @@
 								   field3: courseNumber.value},
 							contentType: 'application/json; charset=utf=8',
 							success: function(data) {
+								//class_table.test = [{}];
 								console.log(data);
 								class_table.table_data = data;
-								var i = 0
+								//class_table.test[data.size];
+								class_table.test = [];
 								data.forEach(element => {
-									class_table.test[i] = false;
-									i++;
+									class_table.test.push(false);
 								});
 								console.log(class_table);
 								class_table.refreshTable();
