@@ -185,7 +185,59 @@ app.post('/register',function(req,res){
 	});	
 });
 
+//post request that handler that is called when a student registers for a course from the table
+//post takes the parameters userID, and Section crn.
+//post returns wheather or not the request was successful or not
+app.post('/regToSection/:rconst', (req,res) => {
+	console.log("registration post called");
+	var userID = req.query['field1'];
+	var crn = req.query['field2'];
 
+	console.log("userid = " + userID);
+	console.log("crn = "+ crn);
+	//perfrom the registration 
+	var registered = registerStudent(userID, crn);
+
+	if(registered[0] == false){
+		res.send(registered[1]);
+	}
+	else{
+		res.send(registered[1]);
+	}
+});
+
+
+app.post('/viewRoster/:rconst', (req,res) =>{
+	console.log('viewRoster post called');
+	var crn = req.query['field1'];
+	db.all("SELECT sections.registered FROM sections WHERE crn == ?", crn, (err,rows) =>{
+			if(err){
+				return console.log(err.message);
+			}
+			else{
+				res.send(rows[0]);
+			}
+
+		});
+});
+
+//post that checks is a particular section is full, or has already been registered to.
+//returns 0 if not registered, 1 if registered, and 2 if on the waitlist
+app.post('/isregistered/:rconst', (req,res) =>{
+	console.log('is registered post request called');
+	var userID = req.query['field1'];
+	var crn = req.query['field2'];
+
+	if(isregistered(userID, crn)){
+		res.send(1);
+	}
+	else if(iswaitlist(userID,crn)){
+		res.send(2);
+	}
+	else{
+		res.send(0);
+	}
+})
 
 
 app.listen(3000, ()=>console.log('server listening on port '+port));
@@ -193,7 +245,6 @@ app.listen(3000, ()=>console.log('server listening on port '+port));
 //function that redirects a user back to the login page
 //after registration of a failed login
 //also displays message describing reason for being sent back -- might want to remove/change
-
 
 function back2Login(res ,message){
 	fs.readFile(path.join(public_dir, 'index.html'), (err, data)=>{
@@ -305,8 +356,6 @@ function timeConflict(id, newCrn){
 								return console.log(err.message);
 							}
 							else {
-								console.log('rows below');
-								console.log(JSON.stringify(rows));
 								temptime = rows[0].times;
 								if(temptime == newtime){
 									return true;
@@ -322,17 +371,43 @@ function timeConflict(id, newCrn){
 				//if no matching times are detected than false is returned
 				return false;
 			}
-
 		}
 
 	});
 	return false;
 }
 
+//function checks if a student is waitlisted for a particular course
+function iswaitlist(id, crn){
+	console.log('iswaitlist called');
+	var classes
+	var checkClass;
+	db.all("SELECT registered_courses FROM people WHERE university_id == ?", id, (err,rows)=>{
+		if (err) {
+			console.log('iswaitlist query error');
+			return console.log(err.message);
+		}
+		else{
+			classes = rows[0].registered_courses.split(',');
+			for (var i = 0; i < classes.length; i++) {
+				//if a class is a waitlisted course
+				if (classes[i].includes('w')){
+					checkClass = classes[i].replace('w','');
+					//checks if waitlisted course is the one we're looking for
+					if (checkClass == crn) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+	});//db query
+
+}
 
 //function that checks if course if full returns true if so 
 function sectionfull(crn){
-	console.log('=====================section full called for crn: '+crn+'======================');
+	console.log('section full called for crn: '+crn);
 	var section;
 	var capacity;
 	var registered;
@@ -349,11 +424,11 @@ function sectionfull(crn){
 			console.log('sectionfull cpacity = '+capacity);
 			console.log('sectionfull registered = '+registered);
 			if(registered < capacity){
-				console.log('=============Section Full registered is less than capacity return false=======');
+				console.log('registered is less than capacity');
 				return false;
 			}
 			else{
-				console.log('=========sectionfull capacity is at or greater than registered========');
+				console.log('registered is more than capacity');
 				return true;
 			}
 		}
@@ -362,7 +437,7 @@ function sectionfull(crn){
 
 //function that checks if a particular student id is already registered in class
 function isregistered(id,crn){
-	console.log('=========isregistered called==========');
+	//console.log('=========isregistered called==========');
 	var courses;
 	db.all("SELECT registered_courses FROM people WHERE university_id == ?", id, (err,rows) =>{
 		if (err) {
@@ -370,18 +445,18 @@ function isregistered(id,crn){
 			return console.log(err.message);
 		}
 		else{
-			console.log("is registered rows:" +JSON.stringify(rows[0]));
+			//console.log("is registered rows:" +JSON.stringify(rows[0]));
 			courses = rows[0].registered_courses.split(',');
-			console.log('currently registered courses =' + courses);
+			//console.log('currently registered courses =' + courses);
 			for (var i = 0; i < courses.length; i++) {
 				if(courses[i] == crn){
 					//student is registered for course return true
-					console.log('====================isregistered return true==============');
+					//console.log('isregistered return true');
 					return true;
 				}
 			}
 			//student is not registered in course
-			console.log('====================isregistered return false===================');
+			//console.log('====================isregistered return false===================');
 			return false;
 		}
 	}); //db all
@@ -391,34 +466,34 @@ function isregistered(id,crn){
 }
 //function used to register students into a section given id and 
 //currently set up to use dummy vars for testing 
-function registerStudent(){
+//returns [boolean success,str reason]
+function registerStudent(id, crn){
 	console.log('-----------register student called--------------');
-	var id = 7;
-	var crn = 20637;
+	//var id = 7;
+	//var crn = 20637;
 	var regCourses = '';
-	var students = '';	
+	var students = '';
+	//variable that determines if a student needs to be placed on a waitlist
+	var waitlist = false;
 
-	/*
+	
 	if (isregistered(id, crn)){
 		//student is already registered dont do anything
 		console.log("student is already registered for course");
+		return[false, "time Conflict"];
 	}
 
-	else if(sectionfull(crn)){
-		//if section if full prevent student from 
-		//if section is full than append a waitlist to crn inserted to student
+	if(sectionfull(crn)){
+	
+		waitlist = true;
 		console.log("section is full");
 	}
 
-	*/
-
-	if(timeConflict(id, crn)){
+	else if(timeConflict(id, crn)){
 		console.log("timeconflict detected");
+		return [false, "Time Conflict"];
 	}
 
-
-
-	/*
 	else{
 
 		console.log('register student started');
@@ -428,21 +503,28 @@ function registerStudent(){
 				return console.log(err.message);
 			}
 			else{
-				// need to check if class is full check to see if class is full
+				
 				//registering inserting course crn into users courses field
 				console.log('people registered courses row:');
 				console.log(rows[0].registered_courses);
 
 				regCourses = rows[0].registered_courses;
 				
+				//if class is full append w to waitlist 
+				if(waitlist){
+					regCourses = regCourses + ",w" + crn;
+				}
+				else{
+					regCourses = regCourses + "," + crn;
+				}
+
 				//adding selected class into the registered courses
-				regCourses = regCourses + "," + crn;
 				db.run('UPDATE people SET registered_courses = "'+regCourses+'" WHERE university_id == ?', id,(err,rows) =>{
 					if (err) {
 						return console.log(err.message);
 					}
 					else{
-						console.log('course successfully registered to student');
+						console.log('section: '+crn +' successfully registered to student: '+id);
 					}
 				});//db updating registered corses
 
@@ -466,6 +548,7 @@ function registerStudent(){
 					}
 					else{
 						console.log("student successfully added to class");
+						return [true, 'Student successfully registered'];
 					}
 				});
 			}
@@ -474,6 +557,5 @@ function registerStudent(){
 
 	}//else--NO CONFLICTS
 	
-	*/
 
 }// register student
