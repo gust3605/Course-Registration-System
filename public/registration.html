@@ -15,8 +15,9 @@
 			<nav>
 				<ul>
 					<li><a class="on_nav"  href="index.html">Back to Login</a></li>
-					<li><a class="on_nav"  href="aboutme.html" class="current">About Us</a></li>
+					<li><a class="current"  href="registration.html">Course Registration</a></li>
 					<li><a class="on_nav"  href="SystemComparison.html">System Comparison</a></li>
+					<li><a class="on_nav"  href="aboutme.html" class="current">About Us</a></li>
 				</ul>
 			</nav>		
 			<div id="filter_subj">
@@ -270,6 +271,7 @@
 						curclass: 11111
 					},
 					methods: {
+						//Build the dropdown table array for selected index
 						populate: function() {
 							this.dropdown = [];
 							var temp = [2];
@@ -350,7 +352,7 @@
 								//class_table.refreshTable();
 							}
 						})
-						console.log(class_table.table_data);
+						//Build the array for the main table
 						class_table.full_table = [];
 						class_table.table_data.forEach(element => {
 							var temp = [10];
