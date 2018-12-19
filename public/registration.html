@@ -14,10 +14,9 @@
 			<header></header>
 			<nav>
 				<ul>
-					<li><a href="index.html">Login</a></li>
-					<li><a href="registration.html" class="current">Course Registration</a></li>
-					<li><a href="aboutme.html">About Us</a></li>
-					<li><a href="SystemComparison.html">System Comparison</a></li>
+					<li><a class="on_nav"  href="index.html">Back to Login</a></li>
+					<li><a class="on_nav"  href="aboutme.html" class="current">About Us</a></li>
+					<li><a class="on_nav"  href="SystemComparison.html">System Comparison</a></li>
 				</ul>
 			</nav>		
 			<div id="filter_subj">
@@ -224,25 +223,6 @@
 					</div>
 					
 			<div id="table_b">
-			<div id="expand">
-				<h1 id="class_title">{{ cur.class_name }}</h1>	<!-- header of the expanded portion will be the name of the class -->
-				<p id="desc">{{ cur.desc }}</p> <!-- course description -->
-				<table>
-					<thead>
-						<tr>
-							<td>Time</td>	<!-- gets dicey here as well, this is the table being built by vue object expander -->
-							<td>CRN</td>
-						</tr>
-					</thead>
-					<tbody>
-						<tr v-for="sec in sections">	<!-- should iterate through like the below table, needs to skip third column which is the description, will be the same for all rows anyways -->
-							<td v-for="temp in sec">{{ temp }}</td>
-						</tr>
-					</tbody>
-				</table>
-				<input type="text" name="to_reg" placeholder="CRN">	<!-- not set up, is the register function -->
-				<button type="button">Register</button>
-			</div>
 			<table id="class_table">
 				<thead>
 					<tr>
