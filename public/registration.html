@@ -258,16 +258,14 @@
 						<th>Waitlist</th>
 					</tr>
 				</thead>
-				<tbody v-for="(data, index) in table_data" :key="index">
-					<tr v-on:click="test[index] = !test[index]; refreshTable(); curclass = index">
+				<tbody v-for="(data, index) in full_table" :key="index">
+					<tr v-on:click="curclass = index; test[index] = !test[index]; refreshTable(); populate()">
 							<!-- should grab the course number(not crn) then the course name on click -->
-						<td v-for="temp in data">{{ temp }}</td>
+						<td v-for="temp in data">{{temp}}</td>
 					</tr>
-					<tr v-if="shouldShow(index)">
-						<td colspan="5">I exist</td>
-						<td colspan="5">
-							<button onclick="class_table.sendSmallForm()" id="registration_sub">Submit</button>
-						</td>
+					<tr v-if="shouldShow(index)" v-for="d in dropdown">
+						<td colspan="4.75" v-for="a in d">{{a}}</td>
+							<td colspan=".5"><button onclick="class_table.sendSmallForm()" id="registration_sub">Submit</button><td>
 					</tr>
 				</tbody>
 			</table>
@@ -283,12 +281,29 @@
 				var class_table = new Vue({
 					el: '#class_table',
 					data: {
+						full_table: [{}],
 						table_data: [{}],
 						test: [],
 						subtable: [{}],
+						course_table: [{}],
+						dropdown: [{}],
 						curclass: 11111
 					},
 					methods: {
+						populate: function() {
+							this.dropdown = [];
+							var temp = [2];
+							temp[0] = this.table_data[this.curclass].times;
+							this.course_table.forEach(element => {
+								//console.log(element.course_number);
+								if(element.course_number == this.full_table[this.curclass][1])
+								{
+									temp[1] = element.description;
+								}
+							});
+							this.dropdown.push(temp);
+
+						},
 						refreshTable: function() {
 							this.$forceUpdate();
 						},
@@ -336,18 +351,49 @@
 								   field3: courseNumber.value},
 							contentType: 'application/json; charset=utf=8',
 							success: function(data) {
-								//class_table.test = [{}];
-								console.log(data);
 								class_table.table_data = data;
-								//class_table.test[data.size];
 								class_table.test = [];
 								data.forEach(element => {
 									class_table.test.push(false);
 								});
-								console.log(class_table);
-								class_table.refreshTable();
+								//class_table.refreshTable();
 							}		
 						})
+						//Course table data (getting ALL)
+						$.ajax({
+							method: 'GET',
+							url: '/filter_course',
+							contentType: 'application/json; charset=utf=8',
+							success: function(data1) {
+								//class_table.test = [{}];
+								class_table.course_table = data1;
+								//class_table.refreshTable();
+							}
+						})
+						console.log(class_table.table_data);
+						class_table.full_table = [];
+						class_table.table_data.forEach(element => {
+							var temp = [10];
+							temp[0] = element.subject;
+							temp[1] = element.course_number;
+							temp[2] = element.section_number;
+							class_table.course_table.forEach(element2 => {
+								if(element2.course_number == element.course_number)
+								{
+									temp[3] = element2.name;
+									temp[6] = element2.credits;
+								}
+							});
+							temp[4] = element.building;
+							temp[5] = element.professors;
+							temp[7] = element.crn;
+							temp[8] = element.registered;
+							temp[9] = element.capacity;
+							class_table.full_table.push(temp);
+						});
+						class_table.refreshTable();
+
+
 					});
 				});
 
