@@ -22,7 +22,7 @@
 			</nav>		
 			<div id="filter_subj">
 					<h1>Select filters here:</h1>
-						<form id="myForm" action="/filter_subj" method="POST" enctype="multipart/form-data">
+						<form id="myForm" action="/filter_subj" method="GET" enctype="multipart/form-data">
 							Subject: 
 							<select id="sub" name="subject">
 								<option value="ALL">ALL</option>
@@ -259,25 +259,21 @@
 					</tr>
 				</thead>
 				<tbody v-for="(data, index) in table_data" :key="index">
-					<tr v-on:click="test[index] = !test[index]; refreshTable();">
+					<tr v-on:click="test[index] = !test[index]; refreshTable(); curclass = data[0]">
 							<!-- should grab the course number(not crn) then the course name on click -->
 						<td v-for="temp in data">{{ temp }}</td>
 					</tr>
 					<tr v-if="shouldShow(index)">
 						<td colspan="5">I exist</td>
 						<td colspan="5">
-							<form action="" method="get">
-								Register for the course:
-								<button name="subject" type="submit" data-value="StudentID" value="CRN">Register</button>
-							</form>
+							<button onclick="class_table.sendSmallForm('data[0]')" id="registration_sub">Submit</button>
 						</td>
 					</tr>
 				</tbody>
 			</table>
-			</div>
-			
+			</div>	
 		<script>
-			var cur_row = "";
+			//var cur_row = "";
 			var user_id = document.getElementById("userID").textContent;
 			console.log(user_id);
 			var user_status = document.getElementById("userStatus").textContent;
@@ -288,7 +284,9 @@
 					el: '#class_table',
 					data: {
 						table_data: [{}],
-						test: []
+						test: [],
+						subtable: [{}],
+						curclass: 11111
 					},
 					methods: {
 						refreshTable: function() {
@@ -296,6 +294,29 @@
 						},
 						shouldShow: function(index) {
 							return this.test[index];
+						},
+						sendSmallForm: function(event) {
+							console.log("MADE");
+							class_table.subtable = [];
+
+							var crn = this.curclass;//document.getElementById("courseName");
+							var userID = user_id;//document.getElementById("courseNumber");
+							$.ajax({
+								async: 'true',
+								crossDomain: 'true',
+								type: 'get',
+								url: '/regToSection/:rconst',
+								data: {field1: userID,//.value,
+									field2: crn,//.value,
+								contentType: 'application/json; charset=utf=8',
+								success: function(data) {
+									//class_table.refreshTable();
+								}}
+							}).done(function (data) {
+								console.log(data);
+								class_table.subtable = data;
+								refreshTable();
+							});
 						}
 					}
 				});	
@@ -329,6 +350,29 @@
 						})
 					});
 				});
+
+				/*$(document).ready(function(){
+					$("#dropForm").submit(function(event){
+						console.log("MADE");
+
+						var crn = 20003;//document.getElementById("courseName");
+						var studentID = 7;//document.getElementById("courseNumber");
+
+						event.preventDefault();
+						$.ajax({
+							method: 'GET',
+							url: '/reg',
+							data: {field1: crn,//.value,
+								   field2: studentID,//.value,
+							contentType: 'application/json; charset=utf=8',
+							success: function(data) {
+								console.log(data);
+								class_table.subtable = data;
+								//class_table.refreshTable();
+							}}
+						})
+					});
+				});*/
 		</script>		
 	</body>
 </html>
