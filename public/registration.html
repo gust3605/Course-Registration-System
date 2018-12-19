@@ -259,14 +259,14 @@
 					</tr>
 				</thead>
 				<tbody v-for="(data, index) in table_data" :key="index">
-					<tr v-on:click="test[index] = !test[index]; refreshTable(); curclass = data[0]">
+					<tr v-on:click="test[index] = !test[index]; refreshTable(); curclass = index">
 							<!-- should grab the course number(not crn) then the course name on click -->
 						<td v-for="temp in data">{{ temp }}</td>
 					</tr>
 					<tr v-if="shouldShow(index)">
 						<td colspan="5">I exist</td>
 						<td colspan="5">
-							<button onclick="class_table.sendSmallForm('data[0]')" id="registration_sub">Submit</button>
+							<button onclick="class_table.sendSmallForm()" id="registration_sub">Submit</button>
 						</td>
 					</tr>
 				</tbody>
@@ -295,11 +295,11 @@
 						shouldShow: function(index) {
 							return this.test[index];
 						},
-						sendSmallForm: function(event) {
-							console.log("MADE");
+						sendSmallForm: function() {
+							console.log(this.table_data[this.curclass].crn);
 							class_table.subtable = [];
 
-							var crn = this.curclass;//document.getElementById("courseName");
+							var crn = this.table_data[this.curclass].crn;//document.getElementById("courseName");
 							var userID = user_id;//document.getElementById("courseNumber");
 							$.ajax({
 								async: 'true',
