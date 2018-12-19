@@ -9,7 +9,7 @@ var util = require('util');
 var mime = require('mime-types');
 
 //just a simple server that runs locally
-const hostname = '127.0.1';
+//const hostname = '127.0.1';
 const port = 3000;
 
 
@@ -18,13 +18,26 @@ var public_dir = path.join(__dirname, "public");
 let db = new sqlite3.Database('classes.db');
 
 
+
+
 const app = express();
 var router = express.Router();
 app.use(express.static(public_dir));
-//app.use(bodyParser.urlencoded({  //   body-parser to
- //   extended: true               //   parse data
-//}));                             //
-//app.use(bodyParser.json());      //
+
+
+
+var server = require('http').Server(app);
+var ioserver = require('socket.io')(server);
+
+
+ioserver.on('connection', (client) =>{
+	//socket gets message from client that class has been registered into 
+	//it emits that crn to clients so they can update the registered list
+	client.on('registerStudent',(crn)=>{
+		ioserver.emit('registerStudent',crn);
+	});
+
+});//io connection
 
 
 ///this ap get needs to be changed
@@ -152,6 +165,20 @@ app.post('/login',function(req,res){
 	});
 });
 
+app.get('/filter_course',function(req,res){
+	console.log("Course table called");
+	db.all('SELECT * FROM courses',function(err,rows){
+			if(err){
+				return console.log(err.message);
+			}
+			else{
+				res.send(rows);
+			}
+	});
+
+});
+
+
 //register new account
 app.post('/register',function(req,res){
 	console.log("app post register called");
@@ -197,13 +224,7 @@ app.get('/regToSection/:rconst', (req,res) => {
 	console.log("crn = "+ crn);
 	//perfrom the registration 
 	var registered = registerStudent(userID, crn);
-
-	if(registered[0] == false){
-		res.send(registered[1]);
-	}
-	else{
-		res.send(registered[1]);
-	}
+	res.send(registered);
 });
 
 
@@ -240,7 +261,14 @@ app.post('/isregistered/:rconst', (req,res) =>{
 })
 
 
-app.listen(3000, ()=>console.log('server listening on port '+port));
+
+
+//server. listen replaces app.listen
+server.listen(port,()=>{
+	console.log('Now listening on port '+ port);
+})
+//app.listen(port, ()=>console.log('server listening on port '+port));
+
 
 //function that redirects a user back to the login page
 //after registration of a failed login
@@ -308,7 +336,6 @@ function gotoabout(res){
 //function that when passed a new crn and list of old classes checks for time conflicts
 function timeConflict(id, newCrn){
 
-	console.log("=======================timeConflict called=================");
 	var currSections='';
 	var checkCrn;
 	var newtime = '';
@@ -321,7 +348,7 @@ function timeConflict(id, newCrn){
 		}
 		else{
 			newtime = rows[0].times;
-			console.log('new time: '+ newtime);
+			
 		}
 	});//db get newtime
 
