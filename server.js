@@ -188,7 +188,7 @@ app.post('/register',function(req,res){
 //post request that handler that is called when a student registers for a course from the table
 //post takes the parameters userID, and Section crn.
 //post returns wheather or not the request was successful or not
-app.post('/regToSection/:rconst', (req,res) => {
+app.get('/regToSection/:rconst', (req,res) => {
 	console.log("registration post called");
 	var userID = req.query['field1'];
 	var crn = req.query['field2'];
@@ -475,6 +475,7 @@ function registerStudent(id, crn){
 	var students = '';
 	//variable that determines if a student needs to be placed on a waitlist
 	var waitlist = false;
+	
 
 	
 	if (isregistered(id, crn)){
@@ -497,7 +498,7 @@ function registerStudent(id, crn){
 	else{
 
 		console.log('register student started');
-		db.all("SELECT people.registered_courses FROM people WHERE university_id == ?", id, (err,rows) =>{
+		db.all("SELECT people.registered_courses FROM people WHERE university_id=?", id, (err,rows) =>{
 			if (err) {
 				console.log("register student error occured 1st query");
 				return console.log(err.message);
