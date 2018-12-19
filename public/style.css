@@ -5,7 +5,6 @@ body {
 	background-position: center;
 	font-family: Georgia, Times, serif;
 	margin: 10px;
-	word-wrap: break-word;
 }
 
 header {
@@ -17,28 +16,18 @@ header {
 }
 
 h1 {
+	text-indent: -9999px;
 	width: 940px;
+	height: 130px;
 	margin: 0px;
-	padding: 2%;
 }
 
 table {
 	table-layout:fixed;
-	width: 90%;
+	width: 70%;
 	text-align:center;
     margin-left:auto; 
     margin-right:auto;
-	border-collapse: collapse;
-
-}
-
-tr{
-	background-color: white;
-}
-
-td {
-	border: solid;
-	border-color: #d6d6d6;
 }
 
 th {
@@ -56,6 +45,7 @@ tr:nth-child(even) {
 	height: 600px;
 	width: 100%;
 }
+
 
 
 nav {
@@ -95,27 +85,15 @@ h3 {
 	color: #de6581;
 }
 
+img{
+	height: 30%;
+	width: auto;
+}
+
 #nickpic {
 	width: 25%;
 	height: 100%;
 	float: left;
-}
-
-button {
-	padding: 1%;
-}
-
-#outer {
-	text-align: center;
-	padding-bottom: 1%;
-}
-
-#filter_subj {
-	display: inline block;
-}
-
-#register {
-	display: inline block;
 }
 
 #hunterpic {
@@ -124,19 +102,31 @@ button {
 	float: left;
 }
 
-#expand {
-	display: none;
-	float: right;
-	background-color: white;
-	border: solid;
-	border-color: rgb(109,68,156);
+#mikepic {
+	width: 25%;
+	height: 100%;
+	float: left;
+}
+
+#intro{
+	width: 70%;
+	height: 80%;
+	position: absolute;
+
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+
+}
+
+#intro h1{
+	font-weight: normal;
+}
+
+#intro p{
+	width: 70%;
+	text-align: left;
 	
 }
 
-#class_table {
-
-}
-
-#reg_but {
-
-}

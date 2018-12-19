@@ -8,6 +8,7 @@
 		<script src="https://cdn.jsdelivr.net/npm/vue"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+		<script src="socket.io.js"></script>
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
@@ -15,13 +16,14 @@
 			<nav>
 				<ul>
 					<li><a href="index.html">Login</a></li>
-					<li><a href="registration.html" class="current">Course Registration</a></li>
+					
 					<li><a href="aboutme.html">About Us</a></li>
+					<li><a href="SystemComparison.html">System Comparison</a></li>
 				</ul>
 			</nav>		
 			<div id="filter_subj">
 					<h1>Select filters here:</h1>
-						<form id="myForm" action="/filter_subj" method="POST" enctype="multipart/form-data">
+						<form id="myForm" action="/filter_subj" method="GET" enctype="multipart/form-data">
 							Subject: 
 							<select id="sub" name="subject">
 								<option value="ALL">ALL</option>
@@ -223,25 +225,27 @@
 					</div>
 					
 			<div id="table_b">
+
+			<!---
 			<div id="expand">
-				<h1 id="class_title">{{ cur.class_name }}</h1>	<!-- header of the expanded portion will be the name of the class -->
-				<p id="desc">{{ cur.desc }}</p> <!-- course description -->
+				
 				<table>
 					<thead>
 						<tr>
-							<td>Time</td>	<!-- gets dicey here as well, this is the table being built by vue object expander -->
+							<td>Time</td>	
 							<td>CRN</td>
 						</tr>
 					</thead>
 					<tbody>
-						<tr v-for="sec in sections">	<!-- should iterate through like the below table, needs to skip third column which is the description, will be the same for all rows anyways -->
+						<tr v-for="sec in sections">	
 							<td v-for="temp in sec">{{ temp }}</td>
 						</tr>
 					</tbody>
 				</table>
-				<input type="text" name="to_reg" placeholder="CRN">	<!-- not set up, is the register function -->
+				<input type="text" name="to_reg" placeholder="CRN">	
 				<button type="button">Register</button>
 			</div>
+		-->
 			<table id="class_table">
 				<thead>
 					<tr>
@@ -253,80 +257,103 @@
 						<th>Section Professor</th>
 						<th>Course Credits</th>
 						<th>Section CRN</th>
-						<th>Size of Registered</th>
-						<th>Waitlist</th>
+						<th>Capacity</th>
+						<th>Enrolled</th>
 					</tr>
 				</thead>
-				<tbody v-for="data in table_data">
-					<tr onclick="class_table.test = !class_table.test" >	<!-- should grab the course number(not crn) then the course name on click -->
+				<tbody v-for="(data, index) in table_data" :key="index">
+					<tr v-on:click="test[index] = !test[index]; refreshTable(); curclass = index">
+							<!-- should grab the course number(not crn) then the course name on click -->
 						<td v-for="temp in data">{{ temp }}</td>
 					</tr>
-					<tr v-if="test">
-						<td colspan="10">I exist</td>
+					<tr v-if="shouldShow(index)">
+						<td colspan="5"></td>
+						<td colspan="5">
+							<button onclick="class_table.sendSmallForm()" id="registration_sub">Submit</button>
+						</td>
 					</tr>
 				</tbody>
 			</table>
-			</div>
-			
+			</div>	
 		<script>
-			var cur_row = "";
-		
-				function expand_row(course_numb, name) {
-					
-					if(name === cur_row){		//this is when clicking on the same row, will close the content
-						console.log("close");
-						console.log(cur_row);
-						document.getElementById("expand").style.display="none";
-						document.getElementById("expand").style.width="0%";
-						document.getElementById("class_table").style.float="none";
-						document.getElementById("class_table").style.width="90%";	
-						cur_row = "";
-					} else {					//different row, will change the content
-						cur_row = name;
-						console.log("open");
-						console.log(cur_row);
-						expanded.update_expanded(cur_row, course_numb);
-						document.getElementById("expand").style.display="inline";
-						document.getElementById("expand").style.width="40%";
-						document.getElementById("class_table").style.float="left";
-						document.getElementById("class_table").style.width="59%";
-					}
-				}
-		
-				var expanded = new Vue({
-					el: '#expand',
-					data: {
-						cur: [{class_name:"", desc:""}],
-						sections: [{}]			//will hold elements in the small table when expanded
-					},
-					methods: {
-						update_expanded: function(name, c_numb) {
-							document.getElementById("class_title").innerHTML = name;	//sets the title in expanded portion
-							//console.log(class_name);
-							var xhttp = new XMLHttpRequest();//STARTS TO GET MESSY HERE - WORKS UP TO HERE
-							
-							xhttp.onreadystatechange = function() {
-								if(xhttp.readyState === 4) {
-									sections = xhttp.response;	//should set sections to the response, three columns {crn, time, description}
-									console.log(sections);
-									document.getElementById("desc").innerHTML = sections; //NEEDS TO BE CHANGED TO BE THE DESCRIPTION. NOT SURE HOW THE DATA IS BEING SENT BACK BUT SHOULD BE THIRD COLUMN IN THE TABLE - description only used here
-								}
-							}
-							xhttp.open('POST', "/server.js", true);
-							xhttp.send(c_numb);
-						}
-					}				
-				});
+			//var cur_row = "";
+			var user_id = document.getElementById("userID").textContent;
+			console.log(user_id);
+			var user_status = document.getElementById("userStatus").textContent;
+			console.log(user_status);
+
+			//websocket integration
+			var socket;
+			
+			//function Init() {
+    
+    			socket = io();
+    			socket.on('connect', () => {
+        			console.log("Connection successful!");
+    			});
+
+    			socket.on("registerStudent",(crn)=>{
+    				//loop through table results when crn is found
+    				var newReg;
+    				for (var i = 0; i < class_table.table_data.length; i++) {
+    					if(class_table.table_data[i].crn == crn){
+    						console.log()
+    						newReg = class_table.table_data[i].registered.split(':')[1];
+    						//console.log('newReg: '+newReg);
+    						newReg = parseInt(newReg) + 1;
+    						newReg = class_table.table_data[i].registered.split(':')[0] + ':' + newReg;
+    						console.log(newReg);
+       						class_table.table_data[i].registered = newReg;
+    					}
+    				}
+    				
+    			});
+			//}
+
+			
+
+
+	
 		
 				var class_table = new Vue({
 					el: '#class_table',
 					data: {
 						table_data: [{}],
-						test: false
+						test: [],
+						subtable: [{}],
+						curclass: 11111
 					},
 					methods: {
 						refreshTable: function() {
-							$( "#class_table" ).load();
+							this.$forceUpdate();
+						},
+						shouldShow: function(index) {
+							return this.test[index];
+						},
+						sendSmallForm: function() {
+							console.log(this.table_data[this.curclass].crn);
+							class_table.subtable = [];
+
+							var crn = this.table_data[this.curclass].crn;//document.getElementById("courseName");
+							var userID = user_id;//document.getElementById("courseNumber");
+							socket.emit('registerStudent',crn);
+							$.ajax({
+								async: 'true',
+								crossDomain: 'true',
+								type: 'get',
+								url: '/regToSection/:rconst',
+								data: {field1: userID,//.value,
+									field2: crn,//.value,
+								contentType: 'application/json; charset=utf=8',
+								success: function(data) {
+									//class_table.refreshTable();
+								}}
+							}).done(function (data) {
+								console.log(data);
+								class_table.subtable = data;
+
+								//refreshTable();
+							});
 						}
 					}
 				});	
@@ -346,14 +373,43 @@
 								   field3: courseNumber.value},
 							contentType: 'application/json; charset=utf=8',
 							success: function(data) {
+								//class_table.test = [{}];
 								console.log(data);
 								class_table.table_data = data;
+								//class_table.test[data.size];
+								class_table.test = [];
+								data.forEach(element => {
+									class_table.test.push(false);
+								});
 								console.log(class_table);
 								class_table.refreshTable();
 							}		
 						})
 					});
 				});
+
+				/*$(document).ready(function(){
+					$("#dropForm").submit(function(event){
+						console.log("MADE");
+
+						var crn = 20003;//document.getElementById("courseName");
+						var studentID = 7;//document.getElementById("courseNumber");
+
+						event.preventDefault();
+						$.ajax({
+							method: 'GET',
+							url: '/reg',
+							data: {field1: crn,//.value,
+								   field2: studentID,//.value,
+							contentType: 'application/json; charset=utf=8',
+							success: function(data) {
+								console.log(data);
+								class_table.subtable = data;
+								//class_table.refreshTable();
+							}}
+						})
+					});
+				});*/
 		</script>		
 	</body>
 </html>

@@ -13,23 +13,45 @@
 			<nav>
 				<ul>
 					<li><a href="index.html" class="current">Login</a></li>
-					<li><a href="registration.html">Course Registration</a></li>
+					
 					<li><a href="aboutme.html">About Us</a></li>
+					<li><a href="SystemComparison.html">System Comparison</a></li>
 				</ul>
 			</nav>
+		
+			<div class="content">
+
+				<div id="loginBox">
+					<h2>Login</h2>
+				 	<form action="/login" method="POST" enctype="multipart/form-data">
+            				ID: <input type="text" name="ID" /><br/>
+            				Password: <input type="text" name="Password" /><br/>
+            				Status: <select name="Status">
+            					<option value="student">Student</option>
+            					<option value="faculty"> Faculty</option>
+            				</select>
+           		 			<input type="submit" value="Submit" />
+        			</form>
+
+        			<br>
+        			<br>
+        			<br>
+        			<h2>Register new user</h2>
+        			<form action="Register" method="POST" enctype="multipart/form-data">
+        				ID: <input type="text" name="ID" /><br/>
+            				Password: <input type="text" name="Password" /><br/>
+            				FirstName: <input type='text' name='FirstName'/><br>
+            				LastName: <input type='text' name='LastName'/><br>
+            				Status: <select name="Status">
+            					<option value="student">Student</option>
+            					<option value="faculty"> Faculty</option>
+            				</select>
+           		 			<input type="submit" value="Submit" />
+        			</form>
+				</div>
 
 
-			<h1>Login</h1>
-			<form method="post">
-				University ID:
-				<input type="text" name="ID"><br>
-				Password:
-				<input type="text" name="Password"><br>
-				
-				<select name="Status">
-					<option value="Student">Student</option>
-					<option value="Faculty">Faculty</option>
-				</select>
-				<input type="submit" value="Login">
-			</form>
+			</div>
+
 	</body>
+</html>
